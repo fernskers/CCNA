@@ -1,2 +1,125 @@
 What is a network? A system of interconnected entities, such as computers, servers, routers, etc. that are linked together to share resources,
 information, or services. 
+
+OSI Model
+
+Application
+Presentation
+Session
+Transport
+Network
+Data Link
+Physical
+
+Physical Layer - Defines physical characteristics of the medium used to transfer data between devices. (e.g. voltage level, cable specifications,
+max transmission distances, physical connectors). 
+
+Data Link Layer - Provides node-to-node connectivity and data transfer (e.g. PC -> switch, switch -> router, router -> router). Defines how data
+is formatted for transmission over a physical medium. Detects and corrects Physical Layer error.
+
+Protocol Data Units (PDUs)
+
+Data 
+Data | L4 Header    Segment
+Data | L4 Header | L3 Header    Packet
+L2 Trailer | Data | L4 Header | L3 Header | L2 Header   Frame
+
+
+Ethernet Frame
+
+Ethernet Header -> Preamble | Start Frame Delimiter | Destination | Source | Type
+Packet
+Ethernet Trailer -> Frame Check Sequence
+
+Preamble: 
+7 bytes long (56 bits) 
+Alternating 1's and 0's
+Allows devices to synchronize their receiver clocks
+
+Start Fram Delimiter (SFD):
+1 byte long (8 bits)
+10101011
+Marks the end of the preamble, and the beginning of the rest of the frame.
+
+Destination & Source:
+Indicate the devices sending and receiving the fram
+Consist of the destination and source 'MAC address'
+MAC = Media Access Control
+6 byte (48-bit) address of the physical device
+
+Type / Length:
+2 byte (16-bit) field
+A value of 1500 or less in this field indicates the LENGTH of the encapsulated packet (in bytes)
+A value of 1536 or greater in this field indicates the TYPE of the encapsulated packet, and the length is determined via other methods
+
+Frame Check Sequence (FCS):
+4 bytes (32 bits) in length
+Detects corrupted data by running a 'CRC' algorithm over the received data
+CRC = 'Cyclic Redundancy Check'
+
+26 bytes in total (header + trailer)
+
+MAC Address
+6-byte physical address assigned to the device when it is made
+A.K.A. 'Burned-In Address' (BIA)
+Is globally unique
+The first 3 bytes are the OUI (Organizationally Unique Identifier), which is assigned to the company making the device
+The last 3 bytes are unique to the device itself
+Written as 12 hexadecimal characters
+
+Dynamic MAC addresses are removed from the MAC address table after 5 minutes of inactivity. 
+
+Preamble + SFD is usually not considered part of the Ethernet header
+
+Minimum size for an Ethernet frame is 64 bytes. 
+Minimum payload size is 46 bytes.
+If the payload is less than 46 bytes, padding bytes are added
+
+Address Resolution Protocol (ARP):
+Used to desover the Layer 2 address (MAC address) of a known Layer 3 address
+Consists of two messages: ARP Request & ARP Reply
+ARP Request is broadcast = sent to all hosts on the network
+ARP Reply is unicast = sent only to one host (the host that sent the request)
+
+FFFF.FFFF.FFFF = broadcast MAC address
+
+ping:
+a network utility that is used to test reachability
+measures round-trip time
+uses two messages: ICMP Echo Request & ICMP Echo Reply
+command: ping <ip-address>
+
+show mac address-table
+clear mac address-table dynamic address <mac-address>
+clear mac address-table dynamic interface <interface-id>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
