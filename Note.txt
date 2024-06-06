@@ -93,19 +93,43 @@ show mac address-table
 clear mac address-table dynamic address <mac-address>
 clear mac address-table dynamic interface <interface-id>
 
+Network Layer - Provides connectivity between end hosts on different networks (outside of the LAN)
+Provides logical addresing (IP addresses)
+Provides path selection between source and destination
 
+IP addresses are 32 bits in length
 
+IPv4 Address Classes
+Class  First Octet  First octet numeric range
 
+A      0xxxxxxx.x      0-127      /8
+B      10xxxxxx.x      128-191    /16
+C      110xxxxx.x      192-223    /24
+D      1110xxxx.x      224-239   (multicast addresses)
+E      1111xxxx.x      240-255   (reserved/experimental addresses)
 
+Loopback Addresses
+Address range 127.0.0.0 - 127.255.255.255
+Used to test the 'network stack' on the local device
 
+Host portion of the address is all 0's = Network Address
+The network address CANNOT be assigned to a host
 
+Host portion of the address is all 1's = Broadcast Address
+The broadcast address CANNOT be assigned to a host
 
+Max number of hosts = 2^(host bits) - 2
 
+Cisco router interfaces are administratively down by default
+Cisco switch interfaces ar eNOT administratively down by deafult
 
+interface <interface> = enter interface configuration mode
+ip address <ip address> <mask> = assign ip address and subnet mask
+no shutdown = enable interface
+show interfaces = displays information about interfaces
 
-
-
-
+hostname <name> = configure's devices hostname
+do show ip interface brief = view interfaces/ip addresses/status/protocol
 
 
 
