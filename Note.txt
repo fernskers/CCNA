@@ -168,31 +168,114 @@ Frame: Frames that have an incorrect format (due to an error)
 Input errors: Total of various counters, such as the above four
 Output errors: Frames the switch tried to send, but failed due to an error
 
-IPv4 Header
+IPv4 Header Fields
 
+Version - 4 bits
+Identifies the version of IP used.
+IPv4 = 4 (0100)
+IPv6 = 6 (0110)
 
+Internet Header Length (IHL) - 4 bits
+The final field of the IPv4 header (Options) is variable in length, so this field is necessary to indicate the total length of the header.
+Identifies the length of the header in 4-byte increments.
+Value of 5 = 5x4-bytes = 20 bytes
+Minimum value is 5 (= 20 bytes)
+Maximum value is 15 (15 x 4 bytes = 60 bytes)
+Minimum IPv4 Header length = 20 bytes
+Maximum IPv4 Header length = 60 bytes
 
+DSCP 'Differentiated Services Code Point' - 6 bits
+Used for QoS (Quality of Service)
+Used to prioritize delay-sensitive data (streaming voice, video, etc.)
 
+ECN 'Explicit Congestion Notification' - 2 bits
+Provides end-to-end (between two endpoints) notification of network congestion without dropping packets. 
+Optional feature that requires both endpoints, as well as the underlying network infrastructure, to support it. 
 
+Total Length field - 16 bits
+Indicates the toal length of the packet (L3 header + L4 segment)
+Measured in bytes (not 4-byte increments like IHL)
+Minimum value of 20 (=IPv4 header with no encapsulated data)
+Maximum value of 65535 (maximum 16-bit value)
 
+Identification field = 16 bits
+If a packet is fragmented due to being too large, this field is used to identify which packet the fragment belongs to.
+All fragments of the same packet will have their own IPv4 header with the same value in this field.
+Packets are fragmented if larger than the MTU (Maximum Transmission Unit)
+The MTU is usually 1500
+Remember the maximum size of an Ethernet frame?
+Fragments are reassembled by the receiving host
 
+Flags field - 3 bits
+Used to control/identify fragments
+Bit 0: Reserved, always set to 0
+Bit 1: Don't Fragment (DF bit), used to indicate a packet that should not be fragmented
+Bit 2: More Fragments (MF bit), set to 1 if there are more fragments in the packet, set to 0 for the last fragment
+*Unfragmented packets will always have their MF bit set to 0
 
+Fragment Offset field - 13 bits
+Used to indicate the position of the fragment within the original, unfragmented IP packet.
+Allows fragmented packets to be ressembled even if the fragments arrive out of order.
 
+Time to Live field - 8 bits
+A router will drop a packet with a TTL of 0
+Used to prevent infinite loops
+Originally designed to indicate the packet's maximum lifetime in seconds
+In practice, indicates a 'hop count': each time the packet arrives at a router, the router decreases the TTL by 1.
+* Recommended TTL by default is 64
 
+Protocol field - 8 bits
+Indicates the protocol of the encapsulated L4PDU
+Value of 6: TCP
+Value of 17: UDP
+Value of 1: ICMP
+Value of 89: OSPF (dynamic routing protocol)
 
+Header Checksum - 16 bits
+A calculated checksum used to check for errors in the IPv4 header.
+When a router receives a packet, it calculates the checksum of the header and compares it to the one in this field of the header.
+If they do not match, the router drops the packet.
+Used to check for errors only in the IPv4 header.
+IP relies on the encapsulated protocol to detect errors in the encapsulated data.
+Both TCP and UDP have their own checksum fields to detect errors in the encapsulated data.
 
+Source & Destination IP Address field - 32 bits (each)
 
+Options field - 0 - 320 bits
+Rarely used.
+If the IHL field is greater than 5, it means that Options are present.
 
+Routing Fundamentals
 
+Routing is the process that routers use to determine the path that IP packets should take over a netowrk to reach their destination.
+Routers store routes to all of their known desitnations in a routing table.
+When routers receive packets, they look in the routing table to find the best route to forward that packet.
 
+There are two main routing methods (methods that routers use to learn routes):
+Dynamic Routing: Routers use dynamic routing protocols (ie. OSPF) to share routing information with each other automatically and build their routing tables.
+Static Routing: A network engineer/admin manually configures routes on the router.
 
+A route tells the router: to send a packet to destination X, you should send the packet to next-hop Y
+or , if the destination is directly connected to the router, send the packet directly to the destination
+or , if the destination is the router's own IP address, receive the packet for yourself
 
+WAN (Wide Area Network) = a network that extends over a large geographical area)
 
+show ip route -> command to view the routing table
 
+L - local - a route to the actual IP address configured on the interface (with a /32 netmask)
+C - connected - a route to the network the interface is connected to. (with the actual netmask configured on the interface)
 
+When you configure an IP address on an interface and enable it with no shutdown, 2 routes (per interface) will automatically
+be added to the routing table:
+- a connected route
+- a local route
 
+A route matches a packet's destination if the packet's destination IP address is part of the network specified in the route.
 
-
+Route selection - it will choose the most specific matching route
+Most specific matching route - the matching route with the longest prefix length.
+Local route = keep packet, don't forward
 
 
 
