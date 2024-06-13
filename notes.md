@@ -300,9 +300,42 @@ The IANA (Internet Assigned Numbers Authority) assigns IPv4 addresses/networks t
 For example, a very large company might receive a class A or class B network, while a small company might receive a class C network.
 However, this led to many wasted IP addresses.
 
+CIDR (Classleess Inter-Domain Routing), the requirements of Class A, Class B, and Class C were removed. This allowed larger networks to be split into smaller
+networks, allowing greater efficiency.
 
+| Dotted Decimal  | CIDR Notation |
+|-----------------|---------------|
+| 255.255.255.128 | /25           |
+| 255.255.255.192 | /26           |
+| 255.255.255.224 | /27           |
+| 255.255.255.240 | /28           |
+| 255.255.255.249 | /29           |
+| 255.255.255.252 | /30           |
+| 255.255.255.254 | /31           |
+| 255.255.255.255 | /32           |
 
+2^x = number of subnets (x = number of 'borrowed' bits)
 
+**Subnets/Hosts (Class B)**
+
+| Prefix Length | Number of Subnets | Number of Hosts |
+|---------------|-------------------|-----------------|
+| /17           | 2                 | 327366          |
+| /18           | 4                 | 16382           |
+| /19           | 8                 | 8190            |
+| /20           | 16                | 4094            |
+| /21           | 32                | 2044            |
+| /22           | 64                | 1022            |
+| /23           | 128               | 510             |
+| /24           | 256               | 254             |
+| /25           | 512               | 126             |
+| /26           | 1024              | 62              |
+| /27           | 2048              | 30              |
+| /28           | 4096              | 14              |
+| /29           | 8192              | 6               |
+| /30           | 16384             | 2               |
+| /31           | 32768             | 0 (2)           |
+| /32           | 65536             | 0 (1)           |
 
 
 
