@@ -3,13 +3,13 @@ information, or services.
 
 **OSI Model**
 
-|Application|
-|Presentation|
-|Session|
-|Transport|
-|Network|
-|Data Link|
-|Physical|
+Application
+Presentation
+Session
+Transport
+Network
+Data Link
+Physical
 
 Physical Layer - Defines physical characteristics of the medium used to transfer data between devices. (e.g. voltage level, cable specifications,
 max transmission distances, physical connectors). 
@@ -17,7 +17,7 @@ max transmission distances, physical connectors).
 Data Link Layer - Provides node-to-node connectivity and data transfer (e.g. PC -> switch, switch -> router, router -> router). Defines how data
 is formatted for transmission over a physical medium. Detects and corrects Physical Layer error.
 
-Protocol Data Units (PDUs)
+**Protocol Data Units (PDUs)**
 
 Data 
 Data | L4 Header    Segment
@@ -89,9 +89,9 @@ measures round-trip time
 uses two messages: ICMP Echo Request & ICMP Echo Reply
 command: ping <ip-address>
 
-show mac address-table
-clear mac address-table dynamic address <mac-address>
-clear mac address-table dynamic interface <interface-id>
+*show mac address-table*
+*clear mac address-table dynamic address <mac-address>*
+*clear mac address-table dynamic interface <interface-id>*
 
 Network Layer - Provides connectivity between end hosts on different networks (outside of the LAN)
 Provides logical addresing (IP addresses)
@@ -99,14 +99,14 @@ Provides path selection between source and destination
 
 IP addresses are 32 bits in length
 
-IPv4 Address Classes
-Class  First Octet  First octet numeric range
-
-A      0xxxxxxx      0-127      /8
-B      10xxxxxx      128-191    /16
-C      110xxxxx      192-223    /24
-D      1110xxxx      224-239   (multicast addresses)
-E      1111xxxx      240-255   (reserved/experimental addresses)
+**IPv4 Address Classes**
+| Class | First Octet | First octet numeric range | mask                              |
+|-------|-------------|---------------------------|-----------------------------------|
+| A     | 0xxxxxxx    | 0-127                     | /8                                |
+| B     | 10xxxxxx    | 128-191                   | /16                               |
+| C     | 110xxxxx    | 192-223                   | /24                               |
+| D     | 1110xxxx    | 224-239                   | (multicast addresses)             |
+| E     | 1111xxxx    | 240-255                   | (reserved/experimental addresses) |
 
 Loopback Addresses
 Address range 127.0.0.0 - 127.255.255.255
