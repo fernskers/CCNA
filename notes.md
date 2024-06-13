@@ -1,15 +1,15 @@
-> What is a network? A system of interconnected entities, such as computers, servers, routers, etc. that are linked together to share resources,
+What is a network? A system of interconnected entities, such as computers, servers, routers, etc. that are linked together to share resources,
 information, or services. 
 
-OSI Model
+**OSI Model**
 
-Application
-Presentation
-Session
-Transport
-Network
-Data Link
-Physical
+|Application|
+|Presentation|
+|Session|
+|Transport|
+|Network|
+|Data Link|
+|Physical|
 
 Physical Layer - Defines physical characteristics of the medium used to transfer data between devices. (e.g. voltage level, cable specifications,
 max transmission distances, physical connectors). 
