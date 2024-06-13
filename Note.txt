@@ -102,11 +102,11 @@ IP addresses are 32 bits in length
 IPv4 Address Classes
 Class  First Octet  First octet numeric range
 
-A      0xxxxxxx.x      0-127      /8
-B      10xxxxxx.x      128-191    /16
-C      110xxxxx.x      192-223    /24
-D      1110xxxx.x      224-239   (multicast addresses)
-E      1111xxxx.x      240-255   (reserved/experimental addresses)
+A      0xxxxxxx      0-127      /8
+B      10xxxxxx      128-191    /16
+C      110xxxxx      192-223    /24
+D      1110xxxx      224-239   (multicast addresses)
+E      1111xxxx      240-255   (reserved/experimental addresses)
 
 Loopback Addresses
 Address range 127.0.0.0 - 127.255.255.255
@@ -276,6 +276,65 @@ A route matches a packet's destination if the packet's destination IP address is
 Route selection - it will choose the most specific matching route
 Most specific matching route - the matching route with the longest prefix length.
 Local route = keep packet, don't forward
+
+To send packets outside of local network, end hosts must send packets to their default gateway
+The default gateway configuration is also called a default route.
+It is a route to 0.0.0.0/0 = all netmask bits set to 0. Includes all addresses from 0.0.0.0 to 255.255.255.255
+
+The default route is the least specific route possible, because it includes all IP addresses.
+End hosts usually have no need for any more specific routes. They just need to know: to send packets outside
+of my local network, I should send them to my default gateway.
+
+ip route <ip-address> <netmask> <next-hop>
+ip route <ip-address> <netmask> <exit-interface>
+
+A default route is a route to 0.0.0.0/0 is the least specific route possible; it includes every possible destination IP address.
+If the router doesn't have any more specific routes that match a packet's destination IP address, the router will forward the packet using the default route.
+A default route is often used to direct traffic to the Internet. More specific routes are used for destinations in the internal corporate network.
+Traffic to destinations outside of the internal network is sent to the Internet.
+
+Only class A, B, C can be assigned to a device as an IP address.
+
+The IANA (Internet Assigned Numbers Authority) assigns IPv4 addresses/networks to companies based on their size.
+For example, a very large company might receive a class A or class B network, while a small company might receive a class C network.
+However, this led to many wasted IP addresses.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
