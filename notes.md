@@ -1,4 +1,5 @@
-# What is a network? 
+# CCNA Notes
+**What is a network?** 
 A system of interconnected entities, such as computers, servers, routers, etc. that are linked together to share resources,
 information, or services. 
 
