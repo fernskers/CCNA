@@ -1,4 +1,5 @@
-What is a network? A system of interconnected entities, such as computers, servers, routers, etc. that are linked together to share resources,
+# What is a network? 
+A system of interconnected entities, such as computers, servers, routers, etc. that are linked together to share resources,
 information, or services. 
 
 **OSI Model**
@@ -123,17 +124,17 @@ Max number of hosts = 2^(host bits) - 2
 Cisco router interfaces are administratively down by default
 Cisco switch interfaces ar eNOT administratively down by deafult
 
-interface <interface> = enter interface configuration mode
-ip address <ip address> <mask> = assign ip address and subnet mask
-no shutdown = enable interface
-show interfaces = displays information about interfaces
+*interface <interface> = enter interface configuration mode*
+*ip address <ip address> <mask> = assign ip address and subnet mask*
+*no shutdown = enable interface*
+*show interfaces = displays information about interfaces*
 
-hostname <name> = configure's devices hostname
-do show ip interface brief = view interfaces/ip addresses/status/protocol
+*hostname <name> = configure's devices hostname*
+*do show ip interface brief = view interfaces/ip addresses/status/protocol*
 
-show interfaces status = shows port/name/status/vlan/duplex/speed type
+*show interfaces status = shows port/name/status/vlan/duplex/speed type*
 
-interface range f0/x - y (easy way to configure multiple interfaces)
+*interface range f0/x - y (easy way to configure multiple interfaces)*
 
 Half duplex: The device cannot send and receieve data at the same time. If it is receiving
 a fram, it must wait before sending a frame.
@@ -168,7 +169,7 @@ Frame: Frames that have an incorrect format (due to an error)
 Input errors: Total of various counters, such as the above four
 Output errors: Frames the switch tried to send, but failed due to an error
 
-IPv4 Header Fields
+### IPv4 Header Fields
 
 Version - 4 bits
 Identifies the version of IP used.
@@ -245,7 +246,7 @@ Options field - 0 - 320 bits
 Rarely used.
 If the IHL field is greater than 5, it means that Options are present.
 
-Routing Fundamentals
+### Routing Fundamentals
 
 Routing is the process that routers use to determine the path that IP packets should take over a netowrk to reach their destination.
 Routers store routes to all of their known desitnations in a routing table.
@@ -285,8 +286,8 @@ The default route is the least specific route possible, because it includes all 
 End hosts usually have no need for any more specific routes. They just need to know: to send packets outside
 of my local network, I should send them to my default gateway.
 
-ip route <ip-address> <netmask> <next-hop>
-ip route <ip-address> <netmask> <exit-interface>
+*ip route <ip-address> <netmask> <next-hop>*
+*ip route <ip-address> <netmask> <exit-interface>*
 
 A default route is a route to 0.0.0.0/0 is the least specific route possible; it includes every possible destination IP address.
 If the router doesn't have any more specific routes that match a packet's destination IP address, the router will forward the packet using the default route.
