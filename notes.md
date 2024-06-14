@@ -338,6 +338,12 @@ networks, allowing greater efficiency.
 | /31           | 32768             | 0 (2)           |
 | /32           | 65536             | 0 (1)           |
 
+VLSM (Variable-Length Subnet Masks) is the process of creating subnets of different size, to make your use of network addresses more efficient.
+
+Steps:
+1) Assign the largest subnet at the start of the address space.
+2) Assign the second-largest subnet after it.
+3) Repeat the process until all subnets have been assigned.
 
 
 
