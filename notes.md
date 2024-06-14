@@ -345,13 +345,32 @@ Steps:
 2) Assign the second-largest subnet after it.
 3) Repeat the process until all subnets have been assigned.
 
+A LAN is a single broadcast domain, including all devices in that broadcast domain.
 
+A broadcast domain is the group of devices which will receive a broadcast frame (destination MAC FFFF.FFFF.FFFF) sent by any one of the members.
 
+A switch will not forward traffic between VLANs, including broadcast/unknown unicast traffic.
+Switch does not perfom inter-VLAN routing. It must send the traffic through the router.
 
+VLANs are configured on switches on a per-interface basis.
+VLANs logically seperate end hosts at Layer 2. 
 
+Switches do not forward traffic directly between hosts in different VLANs.
 
+*show vlan brief* - shows vlans that exists in the switch and interfaces that are in vlans
+VLANs 1,1002-1005 exist by default and cannot be deleted.
 
+**VLAN CONFIGURATION**
 
+An access port is a switchport which belongs to a single VLAN, and usually connects to end hosts like PCs.
+Switchports which carry multiple VLANs are called 'trunk ports'.
+
+*interface range gx/x - x*
+*switchport mode access*
+*switchport access vlan x*
+
+*vlan x (creates vlan)*
+*name <name>*
 
 
 
