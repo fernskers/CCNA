@@ -372,31 +372,77 @@ Switchports which carry multiple VLANs are called 'trunk ports'.
 *vlan x (creates vlan)*
 *name <name>*
 
+In a small network with frew VLANs, it is possible to use a separate interface for each VLAN when connecting switches to switches, and switches to routers.
+However, when the number of VLANs increases, this is not viable. It will result in wasted interfaces, and often routers won't have enough interfaces for each VLAN.
+You can use trunk ports to carry traffic from multiple VLANs over a single interface.
 
+What is a trunk port? It is a switch interface that carries traffic over multiple VLANs.
 
+Switches will 'tag' all frames that they send over a trunk link. This allows the receiving switch to know which VLAN the frame belongs to.
+Trunk ports = 'tagged' ports
+Access ports = 'untagged' ports
 
+There are two main trunking protocols: ISL (Inter-Switch Link) and IEEE 802.1Q
+ISL is an old Cisco proprietary protocol created before the industry standard IEEE 802.1Q
+IEEE 802.1Q is an industry standard protocol created by the IEEE (Institute of Electrical and Electronics Engineers).
 
+The 802.1Q tag is inserted between the Source and Type/Length fields of the Ethernet frame.
+The tag is 4 bytes in length.
+The tag consists of two main fields"
+  Tag Protocol Identifier (TPID)
+  Tag Control Information (TCI)
 
+The TCI consists of three sub-fields.
 
+The TPID (Tag Protocol Identifier) is 2 bytes in length.
+Always set to a value of 0x8100. This indicates that the frame is 802.1Q-tagged.
 
+PCP (Priority Code Point) is 3 bits in length.
+Used for Class of Service (CoS), which prioritizes important traffic in congested networks.
 
+DEI (Drop Eligible Indicator) is 1 bit in length.
+Used to indicate frames that can be dropped if the network is congested.
 
+VID (VLAN ID) 12 bits in length.
+Identifies the VLAN the frame belongs to.
+12 bits in length = 4096 total VLANs, range of 0-4095
+VLANs 0 and 4095 are reserved and can't be used.
+Therefore, the actual range of VLANs is 1 - 4094
 
+The range of VLANs(1-4094) is divided into two sections:
+  Normal VLANs: 1 - 1005
+  Extended VLANs: 1006-4094
+Some older devices cannot use the extended VLAN range, however it's safe to expect that modern switches will support the extended range.
 
+802.1Q has a feature called the native VLAN.
+The native VLAN is VLAN 1 by default on all trunk ports, however this can be manually configured on each trunk port.
+The switch does not add an 802.1Q tag to frames in the native VLAN.
+When a switch receives an untagged frame on a trunk port, it assumes the frame belongs to the native VLAN.
 
+**Trunk configuration**
 
+*switchport trunk encapsulation dot1q* (this is not neccessary for switches that only support 802.1Q)
+*switchport mode trunk* (configure the interface as a trunk)
+*show interfaces trunk* 
+*switchport trunk allowed vlan x* (allows you to add vlans to the allowed list)
+*switchport trunk allowed vlan remove x* (allows you to removed allowed vlans from list)
 
+For security purposes, it is best to change the native VLAN to an unused VLAN.
+*switchport trunk native vlan x* (change native vlan)
 
+The *show vlan brief* command shows the access ports assigned to each VLAN, NOT the trunk ports that allow each VLAN.
+Use the *show interfaces trunk* command instead to confirm trunk ports.
 
+Sub interfaces for a Router on a Stick
+*interface gx/x.xx* (subinterface number does not have to match VLAN number, but it is recommended that they do match)
+*encapsulation dot1q 10*
+*ip address x.x.x.x x.x.x.x*
 
-
-
-
-
-
-
-
-
+Router on a Stick is used to route between multiple VLANs using a single interface on the router and switch.
+The switch interface is configured as a regular trunk.
+The router interface is configured using subinterfaces. You configure the VLAN tag and IP address on each subinterface.
+The router will behave as if frames arriving with a certain VLAN tag have arrived on the subinterface configured with that VLAN tag.
+The router will tag frames sent out of each subinterface with the VLAN tag configured on the subinterface.
 
 
 
