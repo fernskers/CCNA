@@ -444,6 +444,58 @@ The router interface is configured using subinterfaces. You configure the VLAN t
 The router will behave as if frames arriving with a certain VLAN tag have arrived on the subinterface configured with that VLAN tag.
 The router will tag frames sent out of each subinterface with the VLAN tag configured on the subinterface.
 
+There are two methods of configuring the native VLAN on a router:
+use the command *encapsulation dot1q vlan-id native* on the router subinterface
+configure the ip address for the native VLAN on the router's physical interface (the *encapsulation dot1q vlan-id* command is not necessary)
+
+A multilayer switch is capable of both switching AND routing.
+It is 'Layer 3 aware'.
+You can assign IP addresses to its interfaces, like a router.
+You can create virtual interfaces for each VLAN, and assign IP addresses to those interfaces.
+You can configure routes on it, just like a router.
+It can be used for inter-VLAN routing. 
+
+SVIs (Switch Virtual Interfaces) are the virtual interfaces you can assign IP addresses to in a multilayer switch.
+Configure each PC to use the SVI (NOT the router) as their gateway address.
+To send traffic to different subnets/VLANs, the PCs will send traffic to the switch, and the switch will route the traffic.
+
+*ip routing* - This command enables Layer 3 routing on the switch.
+*no switchport* - This command configures the interface as a 'routed port'
+
+*show interfaces status* - shows interfaace status on a switch
+
+creating SVIs:
+*interface vlan <vlan-id>*
+*ip add <ip-add> <mask>*
+
+SVIs are shutdown by default, so remember to use *no shutdown*
+
+In order for a vlan to be up:
+1. the VLAN must exist on the switch
+2. The switch must have at least one access port in the VLAN in an up/up state, AND/OR one trunk port that allows the VLAN that is in an up/up state.
+3. The VLAN must not be shutdown
+4. The SVI must not be shutdown
+
+* DTP and VTP were removed from CCNA exam topics lists. However it is still important to learn them
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
