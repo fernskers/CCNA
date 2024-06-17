@@ -478,20 +478,67 @@ In order for a vlan to be up:
 
 * DTP and VTP were removed from CCNA exam topics lists. However it is still important to learn them
 
+DTP (Dynamic Trunking Protocol) is a Cisco propreitary protocol that allows Cisco switches to dynamically determine their interface status (access or trunk) without manual configuration.
+DTP is enabled by default on all Cisco switch interfaces.
+For security purposes, manual configuration is recommended. DTP should be disabled on all switchports.
 
 
+A switchport in dynamic desirable mode will actively try to form a trunk with other Cisco switches. It will form a trunk it connected to another switchport in the following modes:
+*switchport mode trunk*
+*switchport mode dynamic desirable*
+*switchport mode dynamic auto*
 
+DTP will not form a trunk with a router, PC, etc. The switchport will be in access mode.
 
+On older switches, switchport mode dynamic desirable is the defaul administrative mode.
+On new switches, switchport mode dynamic auto is the default administrative mode.
+You can disable DTP negotiation on an interface with this command: *switch nonegotiate*
+Configuring an access port with switchport mode access also disables DTP negotiation on an interface.
+It is recommended that you disable DTP on all switchports and manually configure them as access or trunk ports.
 
+Switches that support both 802.1Q and ISL trunk encapsulations can use DTP to negotiate the encapsulation they will use.
+This negotiation is enabled by defualt, as the default trunk encapsulation mode is: switchport trunk encapsulation negotiate.
+ISL is favored over 802.1Q, so if both switches support ISL it will be selected.
+DTP frames are sent in VLAN1 when using ISL, or in the native VLAN when using 802.1Q.
 
+VTP (VLAN Trunking Protocol) allows you to configure VLANs on a centrla VTP server switch, and other switches (VTP clients) will synchronize their VLAN database to the server.
+It is designed for large networks with many VLANs, so that you don't have to configure each VLAN on every switch.
+It is rarely used, and it is recommended that you do not use it.
+There are three VTP versions: 1,2, and 3.
+There are three VTP modes: server, client, and transparent.
 
+VTP servers:
+  can add/modify/delete VLANs
+  store the VLAN database in non-volatile RAM
+  will increase the revision number every time a VLAN is added/modified/deleted.
+  will advertise the latest version of the VLAN database on trunk interfaces, and the VTP clients will synchronize their VLAN database to it.
+  VTP servers also function as VTP clients
+  Therefore, a VTP server will synchronize to another VTP server with a higher revision number.
 
+VTP clients:
+  Cannot add/modify/delete VLANs
+  Do no store the VLAN database in NVRAM (in VTPv3, they do)
+  Will synchronize their VLAN database to the server with the highest revision number in their VTP domain.
+  will advertise their VLAN database, and forward VTP adertisements to other clients over their trunk ports.
 
+*show vtp status*
 
+If a switch with no VTP domain (domain NULL) receives a VTP advertisement with a VTP domain name, it will automatically join that VTP domain.
+If a switch receives a VTP advertisement in the same VTP domain with a higher revision number, it will update it's VLAN database to match.
 
+One danger of VTP: If you connect an old switch with a higher revision number to your network (and the VTP domain name matches), all
+switches in the domain will sync their VLAN database to that switch.
 
+VTP Transparent mode:
+  Does no participate in the VTP dmaon (does not sync its VLAN database).
+  Maintains its own VLAN database in NVRAM. It can add/modify/delete VLANs, but they won't be advertised to other switches.
+  Will forward VTP advertisements that are in the same domain as it.
+  Resets VTP revision number to 0.
 
+*vtp mode client* (turns switch into VTP Client)
+*vtp mode transparent* (turns switch into VTP Transparent)
 
+Cisco switches operate in VTP server mode by default.
 
 
 
