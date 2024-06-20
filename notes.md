@@ -540,6 +540,91 @@ VTP Transparent mode:
 
 Cisco switches operate in VTP server mode by default.
 
+Redundancy is an essential part of network design.
+
+Modern networks are expected to run 24/7/365. Even a short downtime can be disastrous for a business.
+If one network component fials, you must ensure that other components will take over with little or no downtime.
+As much as possible, you must implement redundancy at every possible point in the network.
+
+Most PCs only have a single network interface card (NIC), so they can only be plugged into a single siwtch. 
+However, important servers typically have multiple NICs, so they can be plugged into multiple switches for redundancy.
+
+The Ethernet header doesn't have a TTL field. These broadcast frames will loop around the network indefinitely.
+If enough of these looped broadcasts accumulate in the network, the network will be too congested for legitimate traffic to use the network.
+This is called a broadcast storm.
+
+Network congestion isn't the only problem. Eeach time a frame arrives on a switchport, the switch uses the source MAC address field to 'learn' the MAC address
+and update its MAC address table. When frames with the same source MAC address repeatedly arrive on different interfaces, the switch is continuously updating
+the interface in its MAC address table. This is known as MAC Address Flapping.
+
+Classic Spanning Tree Protocol is IEEE 802.1D
+Switches from ALL vendors run STP by default.
+STP prevents Layer 2 loops by placing redundant ports in a blocking state, essentially disabling the interface.
+These interfaces act as backups that can enter a frowarding state if an active (=currently forwarding) interface fails.
+Interfaces in a forwarding state behave normally. They send and receive all normal traffic.
+Interfaces in a blocking state only send or receieve STP messages (called BPDUs = Bridge Protocol Data Units).
+
+Spanning Tree Protocol still uses the term 'bridge'. However, when we use the term 'bridge', we really mean 'switch'. Bridges are not used in modern networks.
+
+By selecting which ports are forwarding and which ports are block, STP creates a single path to/from each point in the network. This prevents Layer 2 loops.
+There is a set process that STP uses to determine which ports should be forwarding and which should be blocking.
+STP-enabled switches send/receieve Hello BPDUs out of all interfaces, the default timer is 2 seconds (the switch will send a Hello BPDU out of every interface, once every 2 seconds).
+If a switch receives a Hello BPDU on an interface, it knows that interface is connected to another switch (routers, PCs, etc. do not use STP, so they do not send Hello BPDUs).
+
+Swiches use one field in the STP BPDU, the Bridge ID field, to elect a root bridge for the network.
+The switch with the lowest Bridge ID becomes the root bridge.
+ALL ports on the root bridge are put in a forwarding state, and other switches in the topology must have a path to reach the root bridge.
+
+Bridge ID
+Bridge Priority (16 bits) - the default bridge priority is 32768 on all switches, so by default the MAC address is used as the tie-breaker.
+MAC Address (48 bits)
+
+Bridge Priority field has been updated to two fields:
+Bridge Priority (4 bits)
+Extended System ID (=VLAN ID) (12 bits)
+Cisco switches use a version of STP called PVST (Per-VLAN Spanning Tree). PVST runs a seperate STP 'instance' in each VLAN, so in each VLAN different interfaces can be forwarding/blocking.
+In the default VLAN of 1, the default bridge priority is actually 32769 (32768 + 1)
+The STP bridge priority can only be changed in units of 4096.
+
+All interfaces on the root bridge are designated ports. Designated ports are in a forwarding state.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
