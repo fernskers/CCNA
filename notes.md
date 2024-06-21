@@ -588,13 +588,62 @@ The STP bridge priority can only be changed in units of 4096.
 
 All interfaces on the root bridge are designated ports. Designated ports are in a forwarding state.
 
+When a switch is powered on, it assumes it is the root bridge.
+It will only give up its position if it receives a 'superior' BPDU (lower bridge ID).
+Once the topology has converged and all switches agree on the root bridge, only the root bridge sends BPDUs
+Other switches in the network will forward these BPDUs, but will not generate their own original BPDUs.
 
+1) The switch with the lowest bridge ID is elected as the root bridge. All ports on the root bridge are designated ports.
+2) Each remaining switch will select ONE of its interfaces to be its root port. The interface with the lowest root cost will be the root port. Root ports are also in a forwarding state.
+3) Each remainting collision domain will select ONE interface to be designated port. The other port in the collision domain will be non-designated.
 
+Speed STP Cost
+10 Mbps 100
+100 Mbps 19
+1 Gbps 4
+10 Gbps 2
 
+The ports connected to another switche's root port MUST be designated. Because the root port is the switch's path to the root bridge, another switch must not block it.
+Root port selection:
+1) Lowest root cost
+2) Lowest neighbor bridge ID
+3) Lowest neighbor port ID
 
+STP Port ID = port priority (default 128) + port number
 
+Every collision domian has a single STP designated port.
 
+1) The switch with the lowest root cost will make its port designated.
+2) If the root cost is the same, the switch with the lowest bridge ID will make its port designated.
+3) The other switch will make its port non-designated (blocking)
 
+*show spanning-tree*
+
+Root/Designated ports remain stable in a Forwarding state.
+Non-Designated ports remain stable in a Blocking state.
+Listening and Learning are transitional states which are passed through when an interface is activated, or when a Blocking port must transition to a Forwarding state
+due to a chnage in the network topology.
+
+After the Blocking state, interfaces with the Designated or Root role enter the Listening state.
+The Listening state is 15 seconds long by deafult. This is determined by the Forward delay timer.
+An interface in the Listening state ONLY forwards/receives STP BPDUs.
+
+After the Listening state, a Designated or Root port will enter the Learning state.
+15 seconds long by deafult. Determined by the Forward delay timer.
+An interface in the Learning state ONLY sends/receives STP BPDUs and learns MAC addresses from regular traffic that arrives on the interface.
+
+Hello Timer - How often the root bridge sends hello BPDUs (2 sec)
+Forward delaay - How long the switch will stay in the Listening and Learning states (15 sec)
+Max Age - How long an interface will wait to change the STP topology after ceasing to receive Hello BDPUs. (20 sec)
+
+IF another BPDU is received before the max age timer counts donw to 0, the time will reset to 20 seconds and no changes will occur.
+If another BPDU is not received, the max age timer counts down to 0 and the switch will reevaluate its STP choices, including root bridge, and local root, designated, and non-designated ports.
+If a non-designated port is selected to become a designated or root port, it will transition from the blocking state to the listening state (15 sec), learning state (15 sec), and
+then finally the forwarding state. So, it can take a total of 50 seconds for a blocking interface to transition to forwarding.
+These timers and transitional states are to make sure that loops aren't accidentally created by an interface moving to forwarding that too soon.
+
+A forwarding interface can move directly to a blocking state (there is no worry about creating a loop by blocking an interface).
+A blocking interface cannot move directly to forwarding state. It must go through the listening and learning states.
 
 
 
