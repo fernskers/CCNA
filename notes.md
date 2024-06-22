@@ -669,27 +669,140 @@ Loop Guard - If you enable loop guard on an interface, even if the interface sto
 *spanning-tree vlan <vlan-#> root primary* configure switch to be root bridge by setting STP priority to 24576 or less than whatever the lowest is
 *spanning-tree vlan <vlan-#> root secondary* sets the STP priority to 28672
 
+Spanning Tree Protocol (802.1D)
+- The original STP
+- All VLANs share one STP instance
+- Therefore, cannot load balance
 
+Rapid Spanning Tree Protocol (802.1w)
+- Much fast at converging/adapting to network changes than 802.1D
+- All VLANs share one STP instance
+- Therefore, cannot load balance
 
+Multiple Spanning Tree Protocol (802.1s)
+- Uses modified RSTP mechanics
+- Can group multiple VLANs into different instances to perform load balancing
 
+Per-VLAN Spanning Tree Plus (PVST+)
+- Cisco's upgrade to 802.1D
+- Each VLAN has its own STP instance
+- Can load balance by blocking different ports in each VLAN
 
+Rapid Per-VLAN Spanning Tree Plus (Rapid PVST+)
+- Cisco's upgrade to 802.1w
+- Each VLAN has its own STP instance
+- Can load balance by blocking different ports in each VLAN.
 
+Cisco summary of RSTP: "RSTP is not a timer-based spanning tree algorithm like 802.1D. Therefore, RSTP offers an improvement over the 30 seconds or more that
+802.1D takes to move a link to forwarding. The heart of the protocol is a new bridge-bridge handshake mechanism, which allows ports to move directly to forwarding."
 
+Similiarties between STP and RSTP:
+- RSTP serves the same purpose as STP, blocking specific ports to prevent Layer 2 loops.
+- RSTP elects a root bridge with the same rules as STP.
+- RSTP elects root ports with the same rules as STP.
+- RSTP elects designated ports with the same rules as STP.
 
+Speed  STP Cost  RSTP Cost
+10 Mbps 100   2,000,000
+100 Mbps 19   200,000
+1  Gbps 4     20,000
+10 Gbps 2     2,000
+100 Gbps 1    200
+1 Tbps   1    20
 
+Rapid Spanning Tree Port States
+Discarding
+Learning
+Forwarding
 
+The non-designated port role is split into two separate roles in RSTP:
 
+The RSTP alernate port role is a discarding port that receives a superior BPDU from another switch.
+This is the same as what you've learned about blocking ports in classic STP.
+Functions as a backup to the root port.
+If the root port fails, the switch can immediately move its best alternate port to forwarding.
+This immediate move to forwarding state functions like a classic STP optional feature called UplinnkFast.
+Because it is built into RSTP, you do not need to activate UplinkFast when using RSTP/Rapid PVST+.
 
+Onemore STP optional feature that was built into RSTP is BackboneFast.
+BackboneFast allows SW3 to expire the made age timers on its interface and rapidly forward the superior BPDUs to SW2.
+This functionality is built into RSTP, so it does not need to be configured.
 
+The RSTP backup port role is a discarding port that receives a superior BPDU from another interface on the same switch.
+This only happens when two interfaces are connecetd to the same collision domain (via a hub)
+Hubs are not used in modern networks, so you will probably not encounter an RSTP backup port.
+Functions as a backup for a designated port.
+The interface with the lowest port ID will be selected as the designated port, and the other will be the backup port.
 
+BPDU Type - 0x02  RSTP
+0x00 - STP
 
+In classic STP, only the root bridge originated BPDUs, and other switches just forwarded the BPDUs they received.
+In rapid STP, ALL switches originate and send their own BPDUs from their designated ports. 
 
+Switches 'age' the BPDU infromation much more quickly. In classic STP, a switch waits 10 hello intervals (20 seconds). In rapid STP, a switch considers 
+a neighbor lost if it misses 3 BPDUs (6 seconds). It will then 'flush' all MAC addresses learned on that interface. 
 
+RSTP Link Types
+RSTP distinguishes between three different 'link types'.
+Edge: a port that is connected to an end host. Moves directly to forwarding, without negotiation.
+Point-to-point: a direct connection between two switches.
+Shared: a connection to a hub. Must operate in half-duplex mode.
 
+Edge ports are connecetd to end hosts.
+Because there is no risk of creating a loop, they can move straight to the forwrding state without the negoatiation process.
+They function like a classic STP port with PortFast enabled.
 
+Point-to-point ports connect dirently to another switch.
+They fucntion in full-duplex.
+You don't need to configure the interface as point-to-point.
 
+Shared ports connect to anothe rswitch (or siwtches) via a hub.
+They function in half-duplex.
+You don't need to configure the interface as shared.
 
+*spanning-tree link-type point-to-point* -> point to point links
+*spanning-tree portfast* -> end hosts
 
+ASW = Access Layer Switch, a switch that end hosts connect to.
+DSW = Distribution layer switch, a switch that access layer switches connect to.
+
+When the bandsidth of the interfaces connected to end hosts is greater than the bandwidth of the connection to the distribution switch(es), this is called oversubscription.
+Some oversubsciprtion is acceptable, but too much will cause congestion.
+
+If you connect two switches together with multiple links, all except one will be disabled by spanning tree.
+If all of ASW1's interfaces were forwarding, Layer 2 loops would form between ASW1 and DSW1, leading to broadcast storms.
+Other links will be unused unless the active link fails. In that case, one of the inactive links will start forwarding.
+
+EtherChannel groups multiple interfaces together to act as a single interface.
+STP will treat this group as a single interface.
+Traffic using the EtherChannel will be load balanced among the physical interfaces in the group. An algorithm is used to determine which traffic will use which
+physical interface.
+Some other names for an EtherChannel are:
+Port Channel
+LAG (Link Aggregation Group)
+
+EtherChannel load balances based on 'flows'
+A flow is a communication between two nodes in the network.
+Frames in the same flow will be forwarded using the same physical interface.
+If frames in the same flow were forwarded using different physical interfaces, some frames may arrive at the destination out of order, which can cause problems.
+
+You can change the inputs used in the interface selection calculation.
+Inputs that can be used: Source MAC, Destination MAC, Source AND Destination MAC, Source IP, Destination IP, Source and Destination IP
+
+*show etherchannel load-balance* (check current load-balance config)
+*port-channel load-balance <method>* (change load-balance config)
+
+Three methods of EtherChannel configuration on Cisco switches:
+PAgP (Port Aggregation Protocol)
+-> Cisco propreitary protocol
+-> Dynamicallly negotiates the creation/maintenance of the EtherChannel (like DTP does for trunks)
+LACP (Link Aggregation Control Protocol)
+-> Industry standard protocol (IEEE 802.3ad)
+-> Dynamically negotiates the creation/maintenance of the EtherChannel (like DTP does for trunks)
+Static EtherChannel
+-> A protocol isn't used to determine if an EtherChannel should be formed.
+-> Interfaces are statically configured to form an EtherChannel
 
 
 
