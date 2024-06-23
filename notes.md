@@ -776,8 +776,7 @@ Other links will be unused unless the active link fails. In that case, one of th
 
 EtherChannel groups multiple interfaces together to act as a single interface.
 STP will treat this group as a single interface.
-Traffic using the EtherChannel will be load balanced among the physical interfaces in the group. An algorithm is used to determine which traffic will use which
-physical interface.
+Traffic using the EtherChannel will be load balanced among the physical interfaces in the group. An algorithm is used to determine which traffic will use which physical interface.
 Some other names for an EtherChannel are:
 Port Channel
 LAG (Link Aggregation Group)
@@ -804,7 +803,8 @@ Static EtherChannel
 -> A protocol isn't used to determine if an EtherChannel should be formed.
 -> Interfaces are statically configured to form an EtherChannel
 
-
+Up to 8 interfaces can be formed into a single EtherChannel (LACP allows up to 16 but only 8 will be active, the other
+8 will be in standby mode, waiting for an active interface to fail.)
 
 
 
