@@ -889,10 +889,21 @@ Static routes will always have a metric of 0 and AD of 1.
 
 ![image](https://github.com/fernskers/CCNA/assets/57144399/369307ca-5512-41a3-b367-28f53be030ac)
 
+In most cases a company will only use a single IGP - usually OSPF or EIGRP
+However, in some rare cases they might use two. For example, if two companies connect their networks to share information,
+two different routing prtocols might be in use.
+Metric is used to compare routes learned via the same routing protocol.
+Different routing protocols use totally different metrics, so they cannot be compared.
+For example, an OSPF route to 192.168.4.0/24 might have a metric of 30, while an EIGRP route to the same destination  might have a metric of 33280.
+The administrative distance (AD) is used to determine which routing protocl is preferred.
+A lower AD is preferred, and indicates that the routing protocol is considered more 'trustworthy' (more likelly to select good routes)
 
+![image](https://github.com/fernskers/CCNA/assets/57144399/26790c97-90ff-4ff2-980f-d14d9fd50667)
+![image](https://github.com/fernskers/CCNA/assets/57144399/74ad340b-a939-4f0c-9236-149da5c08991)
 
-
-
+By changing the AD of a static route, you can make it less preferred than routes learned by a dynamic routing protocol to the same destination.
+This is called a 'floating static route'
+The route will be inactive (not in the routing table) unless the route learned by the dynamic routing protocl is removed.
 
 
 
