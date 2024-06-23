@@ -790,7 +790,7 @@ You can change the inputs used in the interface selection calculation.
 Inputs that can be used: Source MAC, Destination MAC, Source AND Destination MAC, Source IP, Destination IP, Source and Destination IP
 
 *show etherchannel load-balance* (check current load-balance config)
-*port-channel load-balance <method>* (change load-balance config)
+*port-channel load-balance <method>* (change load-balance method)
 
 Three methods of EtherChannel configuration on Cisco switches:
 PAgP (Port Aggregation Protocol)
@@ -805,6 +805,113 @@ Static EtherChannel
 
 Up to 8 interfaces can be formed into a single EtherChannel (LACP allows up to 16 but only 8 will be active, the other
 8 will be in standby mode, waiting for an active interface to fail.)
+
+*channel-group <#> mode <mode>*
+
+PGAP:
+auto + auto = no EtherChannel
+desirable + auto = EtherChannel
+desirable + desirable = EtherChannel
+
+LACP:
+passive + passive = no EtherChannel
+active + passive = EtherChannel
+active + active = EtherChannel
+
+On mode only works with on mode (on + desirable or on + active will not work)
+
+*channel-protocol ?* (manually configures the EtherChannel protocol)
+
+*interface port-channel <#>*
+
+Member interfaces must have matching configurations.
+-> Same duplex
+-> Same speed
+-> Same switchport mode
+-> Same allowed VLANs/native VLAN
+If an interface's configurations do not match the others, it will be excluded from the channel
+
+*show etherchannel summary*
+*show etherchannel port-channel*
+
+Configuring Layer 3 EtherChannel:
+*no switchport*
+*channel-group 1 mode active*
+
+Network route - a route to a network/subnet (mask length </32)
+Host route - a route to a specific host (/32 mask)
+
+Routers can use dynamic routing protocols to advertise information about the routes they know to other routers.
+The form 'adjacencies'/'neighbor relationships'/'neighborships' with adjacent routers to exchange this information.
+If multiple routes to a destination are learned, the router determins which route is superior and adds it to the routing table.
+It uses the 'metric' of the route to decide which is superior (lower metric = superior)
+
+
+Dynamic routing protocls can be divided into two main categories:
+IGP (interior Gateway Protcol)
+EGP (Exterior Gateway Protocol)
+
+IGP = used to share routes within a single autonomous system (AS), which is a single organization
+EGP = used to share routes between different autonomous systems
+
+Algorithm type
+EGP - Path Vector -> Border Gateway Procotol (BGP)
+IGP - Distance Vector -> Routing Information Protocol (RIP), Enhanced Interior Gateway Routing Protocol (EIGRP)
+    - Link State -> Open Shortest Path First (OSPF), Intermediate System to Intermediate System (IS-IS)
+
+Distance vector protocols were invented before link state protocls.
+Early examples are RIPv1 and Cisco's proprietary protocol IGRP (which was update to EIGRP)
+Distance vector protocols operate by sending the following to their directly connected neighbors:
+-> their known destination networks
+-> their metric to reach their known destination networks
+This method of sharing route information is often called 'routing by rumor'
+This is because the router doesn't know about the network beyond its neighbors. It only knows the information that its neighbors tell it.
+Called 'distance vector' because the routers only learn the 'distance' (metric) and 'vector' (direction, the next-hop router) of each route
+
+When using a link state routing protocol, every router creates a 'connectivity map' of the network
+To allow this, each router advertises information about its interfaces (connected networks) to its neighbors.
+These advertisements are passed along to other routers, until all routers in the network develop the same map of the network.
+Each router independentlky uses this map to calculate the best routes to each desitnation.
+Link state protocols use more resources (CPU) on the router, because more information is shared.
+However, link state protocls tend to be faster in reacting to changes in the network than distance vector protocols.
+
+A router's route table contains the best route to each destination network it knows about.
+If a router using a dynamic routing protocl learns two different routes to the same destination, how does it determine which is 'best'?
+It uses the metric value of the routes to determine which is best. A lower metric = better.
+Each routing protocl uses a different metric to determine which route is the best.
+
+If a router learns two (or more) routes via the same routing protocl to the same destination (same network address, same subnet mask) with the same
+metric, both will be added to the routing table. Traffic will be load-balanced over both routes.
+
+ECMP (Equal Cost Multi-Path)
+
+Static routes will always have a metric of 0 and AD of 1.
+
+![image](https://github.com/fernskers/CCNA/assets/57144399/369307ca-5512-41a3-b367-28f53be030ac)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
