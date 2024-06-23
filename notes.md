@@ -905,19 +905,72 @@ By changing the AD of a static route, you can make it less preferred than routes
 This is called a 'floating static route'
 The route will be inactive (not in the routing table) unless the route learned by the dynamic routing protocl is removed.
 
+Routing Information Protocol (industry standard) - RIP
+Distance vector IGP (uses routing-by-rumor logic to learn/share routes)
+Uses hop count as its metric. One router = one hop (bandwidth is irrelevant!)
+The maximum hop count is 15 ( anything more than that is considered unreachable)
+Has three versions:
+  RIPv1 and RIPv2, used for IPv4
+  RIPng (RIP Next Generation), used for IPv6
 
+Uses two message types:
+  Request: To ask RIP-enabled neighbor routers to send their routing table
+  Response: To send the local router's routing table to enighboring routers
 
+By default, RIP-enable routers will share their routing table every 30 seconds
 
+RIPv1: 
+- only advertises classful addresses (Class A, Class B, Class C)
+- doesn't support VLSM, CIDR
+- doesn't include subnet mask information in advertisements (Response messages)
+    10.1.10/24 will become 10.0.0.0 (Class A address, so assumed to be /8)
+    172.16.192.0/18 will become 172.16.0.0 (Class B address, so assumed to be /16)
+    192.168.1.4/30 will become 192.168.1.0 (Class C address, so assumed to be /24)
+- message are broadcast to 255.255.255.255
 
+RIPv2:
+- supports VLSM, CIDR
+- includes subnet mask information in advertisements
+- messages are multicast to 224.0.0.9
 
+Broadcast messages are delivered to all devices on the local network.
+Multicast messages are delivered only to devices that have joined that specific multicast group
 
+configuring rip:
+*router rip*
+*version 2* (preferable version of RIP)
+*no auto-summary* (converts networks routers advertise to classful networks)
+*network x.x.x.x* (network network command is classful, it will convert to classful networks)
 
+The **network** command tells the router to:
+  look for interfaces with an IP address that is in the specified range
+  active RIP on the interfaces that fall in the range
+  form adjacencies with connected RIP neighbors
+  advertise the network prefix of the interface (NOT the prefix in the network command)
+The OSPF and EIGRP network commands operate in the same way.
 
+*passive-interface <interface>* (tells the router to stop sending RIP advertisements out of the specified interface)
+*default-information originate* (share deafult routes with neighbors)
+*show ip protocols*
 
+EIGRP (Enhanced Interior Gateway Routing Protocol)
+- Was Cisco priopretary, but Cisco has now published it openly so other vendors can implemnt it on their equipment
+- Considered an 'advanced' / 'hybrid' distance vector routing protocol
+- Much faster than RIP in reacting to changes in the network
+- Does not have the 15 'hop-count' limit of RIP
+- Sends messages using multicast address 224.0.0.10
+- Is the only IGP that can perform unequal-cost load-balancing (by default it performs ECMP load-balancing over 4 paths like RIP)
 
+EIGRP configuration:
+*router eigrp <AS #>* The AS number must match between routers, or they will not form an adjacency and share route information.
+*no auto-summary* auto summary will advertise classful networks, disable this bs
+*passive-interface <interface>*
+*network x.x.x.x* The network command will assume a classful address if you don't specify the mask
+*network x.x.x.x <wildcard-mask>*
 
-
-
+EIGRP uses a wildcard mask instead of a regular subnet mask.
+A wildcard mask is basically an 'inverted' subnet mask.
+All 1s in the subnet mask are 0 in the equivalent wildcard mask. All 0s in the subnet mask are 1 in the equivalent wildcard mask.
 
 
 
