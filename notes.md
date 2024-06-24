@@ -999,6 +999,231 @@ Variance 2 = feasible successor routes with an FD up to 2x the successor route's
 
 EIGRP will only perform unequal-cost load-balancing over feasible successor routes. If a route doesn't meet the feasibility requirement, it will NEVER be selected for load-balancing, regardless of the variance.
 
+When using a link state routing protocol, every router creates a 'connectivity' map of the network.
+To allow this, each router advertises information about its interfaces (connceted networks) to its neighbors. These advertisements are passed along to other routers, until all routers
+in the network develop the same map of the network.
+Each router independently uses this map to calculate the best routes to each destination.
+Link state protocls use more resources (CPU) on the router, because more information is shared.
+However, link state protocols tend to be faster in reacting to changes in the network than distance vector protocols.
+
+Stands for Open Shortest Path First
+Uses the Shortest Path First algorithm of Dutch computer scientisht Edsger Dijkstra.
+Three versions:
+OSPFv1 (1989): OLD, not in use anymore
+OSPFv2 (1998): Used for IPv4
+OSPFv3 (2008): Used for IPv6 (can also be used for IPv4, but usually v2 is used)
+Routers store information about the network in LSAs (Link State Advertisements), which are organized in a structure called the LSDB (Link State Database).
+Routers will flood LSAs until all routers in the OSPF area develop the same map of the network (LSDB).
+
+The LSA is flooded throughout the network until all routers have received it.
+The results in all routers sharing the same LSDB.
+Each LSA has an aging timer (30 min by default). .The LSA will be flooded again after the timer expires.
+
+In OSPF, there are three main steps in the process of sharing LSAs and determining the best route to each destination in the network.
+1) Become neighbors with other routers connected to the same segment
+2) Exchange LSAs with neighbor routers
+3) Calculate the best routes to each destination, and insert them into the routing table.
+
+OSPF uses areas to divide up the network
+Small networks an be single-area without anynegative effects on performance
+In larger networks, a single-area design can have negative effects:
+ - the SPF algorithm takes more time to calculate routes
+ - the SPF algorithm requires exponentially more processing power on the routers
+ - the larger LSDB takes up more memory on the routers
+ - any small change in the network causes every router to flood LSAs and run the SPF algorithm again
+
+By dividing a large OSPF network into serveral smaller areas, you can avoid the above negative effects.
+
+An area is a set of routers and links that share the same LSDB
+The backbone area (area 0) is an area that all other areas must connect to.
+Routers with all interfaces in the same area are called internal routers.
+Routers with interfaces in multiple areas are called area border routers (ABRs)
+Routers connceted to the backbone area (area 0) are called backbone routers.
+An intra-area route is a route to a destination inside the same OSPF area.
+An inter-area route is a route to a destination in a different OSPF area.
+
+ABRs maintain a separate LSDB for each area they are connected to. It is recommended that you connect an ABR to a maximum of 2 areas.
+Connecting an ABR to 3+ areas can overburden the router.
+
+OSPF areas should be contiguous. (areas should be connected, not divided)
+All OSPF areas must have at least one ABR connceted to the backbone area.
+OSPF interfaces in the same subnet must be in the same area.
+
+OSPF config:
+*router ospf <process-ID>*
+*network <ip-address> <wildcard-mask> area <area-ID>*
+
+Note: OSPF process ID is locally significant. Routers with different process IDs can become OSPF neighbors
+The network command tells OSPF to...
+look for any interfaces with an IP address contained in the range specified in the network command
+Activate OSPF on the interface in the specified area
+The router will then try to become OSPF neighbors with other OSPF-activated neighbor routers.
+
+*passive-interface <interface>* (tells router to stop sending OSPF 'hello' messages out of the interface)
+However, the router will continue to send LSAs informing it's neighbors about the subnet configured on the interface.
+You should always use this command on interfaces which don't have any OSPF neighbors
+*default-information originate* (create a new LSA and flood it, declare default route on this interface)
+*show ip protocols*
+
+Router ID order of priority:
+1) Manual configuration
+2) Highest IP address on a loopback interface
+3) Highest IP address on a physical interface
+
+*clear ip ospf process* (resets OSPF router)
+*router-id <router-id>*
+
+An autonomous system boundary router (ASBR) is an OSPF router that connects the OSPF network to an external network.
+R1 is connected to the Internet. By using the default-information originate command, R1 becomes an ASBR.
+*maximum-paths <number>* change maximum paths
+
+OSPF's metric is called cost
+It is automatically calculated based on the bandswidth (speed) of the interface
+It is calculated by dividing a reference bandwidth value by the interface's bandwidth 
+The default reference bandwidth is 100 mbps
+  Reference: 100 mbps / Interface: 10 mbps = cost of 10
+  Reference: 100 mbps / Interface: 100 mbps = cost of 1
+  Reference: 100 mbps / Interface: 1000 mbps = cost of 1
+
+All values less than 1 will be converted to 1.
+Therefore Fast Ethernet, Gigabit Ethernet, 10Gig Ethernet, etc. are equal and all have a cost of 1 by default.
+
+You can change the reference bandwidth with this command:
+*auto-cost reference-bandswidth <megabits-per-second>*
+You should configure a reference bandwidth greater than the fastest links in your network.
+You should configure the same reference bandwidth on all OSPF routers in the network.
+
+The OSPF cost to a destination is the toal cost of the outgoing interfaces
+Loopback interfaces have a cost of 1
+
+*ip ospf cost <cost>* manually configure cost
+
+One more option to change the OSPF cost of an interface is to change the bandwidth of the interface with the bandwidth command.
+Although the bandwidth matches the interface speed by default, changing the interface bandwidth doesn't actually change the speed at which the interface operates.
+The bandsidth is just a value that is used to calculate OSPF cost, EIGRP metric, etc.
+To change the speed at which the interface operates, use the speed command.
+Because the bandwidth value is used in other calculations, it is not recommended to change this value to alter the interface's OSPF cost.
+It is recommended that you change the reference bandwidth, and then use the *ip ospf cost* command to change the cost of individual interfaces if you want.
+
+Three ways to modify the OSPF cost:
+1) Change the reference bandwidth
+2) Manual configuration
+3) Change the interface bandwidth *bandwidth <kilobits-per-seconds>*
+
+*show ip ospf interface brief*
+
+Making sure that routers successfullly become OSPF neighbors is the main task in configuring and troublshooting OSPF
+Once routers become neighbors, they automatically do the work of sharing network information, calculating routes, etc.
+When OSPF is activated on an interface, the router starts sending OSPF hello messages out of the interface at regular intervals (determined by the hello timer). These are used to introduce
+the router to potential OSPF neighbors.
+The default hello timer is 10 seconds on an Ethernet connection.
+Hello message are multicast to 224.0.0.5 (multicast address for all OSPF routers)
+OSPF messages are encapsulated in an IP header, with a value of 89 in the Protocol field
+
+OSPF states - Down, Init, 2-way, Exstart, Exchange, Loading, Full
+
+In the Loading state, routers send Link State Request (LSR) messgaes to request that their neighbors to request that their neighbors send them any LSAs they don't have.
+LSAs are sent in Link State Update (LSU) messages.
+The routers send LSAck messages to aknowledge that they received the LSAs.
+
+In the Full state, the routers have a full OSPF adjacency and identical LSDBs
+They continue to send and listen for Hello packets (every 10 seconds by default) to maintain the neighbor adjacency.
+Every time a Hello packet is reeived, the 'Dead' timer (40 seconds by default) is reset.
+If the Dead timer counts down to 0 and no Hello message is received, the neighbor is removed
+The routers will continue to share LSAs as the network changes to make sure each router has a complete and accurate map of the network (LSDB)
+
+![image](https://github.com/fernskers/CCNA/assets/57144399/a7a60b39-6678-41b3-847d-91ed85da9d3c)
+
+*show ip ospf neighbor*
+
+*ip ospf <process-id> area <area>* activate OSPF directly on an interface
+*passive-interface default* configure ALL interfaces as OSPF passive interfaces
+*no passive-interface <int-id>* configure specific interfaces as active
+
+A loopback interface is a virtual interface in the router
+It is always up/up (unless manually shut down)
+It is not dependent on a physical interface
+So, it provides a consistent IP address that can be used to reach/identify the router.
+
+The OSPF 'network type' refers to the type of connection between OSPF neighbors
+There are three main OSPF network types:
+  Broadcast - enabled by default on Ethernet and FDDI (Fiber Distributed Data Interfaces) interfaces
+  Point-to-point - enabled by Default on PPP (Point-to-Point Protocol) and HDLC (High-Level Data Link Control) interfaces
+  Non-broadcast - enabled by default on Frame Relay and X.25 interfaces
+
+Router dynamically discover neighbors by sending/listening for OSPF Hello messages using multicast address 224.0.0.5
+A DR (designated router) and BDR (backup designated router) must be elected on each subnet (only DR if there are no OSPF neighbors, ie. R1's G1/0 interface)
+Routers which aren't the DR or BDR become a DROther
+
+The DR/BDR election order of priority:
+1. HIghest OSPF interface priority
+2. Highest OSPF Router ID
+
+'First place' becomes the DR for the subnet, 'second place' becomes the BDR
+The default OSPF interface priority is 1 on all interfaces
+
+*ip ospf priority <priority>* set OSPF interface priority
+
+Note: If you set the OSPF interface priority to 0, the router CANNOT be the DR/BDR for the subnet
+The DR/BDR election is 'non-preemptive'. Once the DR/BDR are selected they will keep their role until OSPF is reset
+
+When the DR goes down, the BDR becomes the new DR. Then an election is held for the next BDR.
+DROrthers will only omve to the FULL state with the DR and BDR. The neighbor state with other DROthers will be 2-way.
+
+In the broadcast network type, routers will only form a full OSPF adjacency with the DR and BDR of the segment.
+Therefore, routers only exchange LSAs with the DR and BDR. DROthers will not exchange LSAs with each other.
+All routers will still have the same LSDB, but this reduces the amount of LSAs flooding the network.
+Messages to the DR/BDR are multicast using address 224.0.0.6
+The DR and BDR will form a FULL adjacency with ALL routers in the subnet. DROthers will form a FULL adjacency only with the DR/BDR.
+
+Point-to-Point Network Type:
+Enabled on serial interfaces using the PPP or HDLC encapsulations by default.
+Routers dynamically discover neighbors by sending/listening for OSPF Hello messages using multicast address 224.0.0.5
+A DR and BDR are not elected
+These encapsulations are used for 'point-to-point' connections
+Therefore there is no point in electing a DR and BDR
+The two routers will form a Full adjacency with each other
+
+Serial Interfaces:
+One side of a serial connection functions as DCE (Data Communications Equipment)
+The other side functions as DTE (Data Terminal Equipment)
+The DCE side needs to specify the clock rate (speed) of the connection
+Ethernet interfaces use the speed command to configure the interface's operating speed. Serial interfaces use the clock rate command.
+The default encapsulation si HDLC, *encapsulation ppp* change to ppp encapsulation
+One side is DCE, other is DTE
+
+If two routers are directly connected with an Ethernet link, there is no need for a DR/BDR. You can configure the point-to-point network type in this case.
+
+![image](https://github.com/fernskers/CCNA/assets/57144399/51b39090-a801-42a5-8458-6a043bb881fd)
+
+OSPF Neighbor Requirements
+1) Area number must match
+2) Interfaces must be in the same subnet
+3) OSPF process must not be shutdown
+4) OSPF Router ID's must be unique
+5) Hello and Dead timers must match
+6) Authentication settings must match
+7) IP MTU settings must match
+8) OSPF Network Type must match
+
+LSA Types
+Type 1 (Router LSA)
+- Every OSPF router generates this type of LSA
+- It identifies the router using its router ID
+- It also lists networks attached to the router's OSPF-activated interfaces
+
+Type 2 (Network LSA)
+- Generated by the DR of each 'multi-access' network
+- Lists the routers which are attached to the multi-access network
+
+Type 5 (AS-External LSA)
+- Generated by ASBRs to describe routes to destinations outside of the AS (OSPF domain)
+
+
+
+
+
+
 
 
 
