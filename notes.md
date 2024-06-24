@@ -972,17 +972,32 @@ EIGRP uses a wildcard mask instead of a regular subnet mask.
 A wildcard mask is basically an 'inverted' subnet mask.
 All 1s in the subnet mask are 0 in the equivalent wildcard mask. All 0s in the subnet mask are 1 in the equivalent wildcard mask.
 
+'0' in the wildcard mask = must match
+'1' in the wildcard mask = don't have to match
 
+Router-ID order of priority:
+1) Manual configuration
+2) Highest IP address on a loopback interface
+3) Highest IP address on a physical interface
 
+*eigrp router-id <router-id>* (configure eigrp router id)
 
+By default, EIGRP uses bandswidth and delay to calculate metric
+((K1 * bandwidth + (K2 * bandwidth) / (256 - load) + K3 * delay ) * (K5 / (reliability + K4))) * 256
+The default 'K' values are K1 = 1, K2 = 0, K3 = 1, K4 = 0, K5 = 0
+You can simplify the formula like this: metric = bandwidth of the slowest link + the delay of all links
 
+Feasible Distance - This router's metric value to the route's destination
+Reported Distance (aka Advertised Distance) = The neighbor's metric value to the route's destination.
+Successor = the route with the lowest metric to the destination (the best route)
+Feasible Successor = an alternate route to the destination (not the best route) which meets the feasibility condition
+Feasibility condition: A route is considered a feasible successor if it's reported distance is lower than the successor route's feasible distance.
 
+Variance 1 = only ECMP load-balancing will be performed
+*variance <#>* Metric variance Multiplier
+Variance 2 = feasible successor routes with an FD up to 2x the successor route's FD can be used to load-balance
 
-
-
-
-
-
+EIGRP will only perform unequal-cost load-balancing over feasible successor routes. If a route doesn't meet the feasibility requirement, it will NEVER be selected for load-balancing, regardless of the variance.
 
 
 
