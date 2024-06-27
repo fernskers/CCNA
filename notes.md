@@ -1270,6 +1270,194 @@ Configuring HSRP:
 
 Both routers have to use same version of HSRP
 
+Function of Layer 4 (Transport Layer)
+- Provides transparent transfer of data between end hosts.
+- Provides (or doesn't provide various services to applications:
+  -> reliable data transfer
+  -> error recovery
+  -> data sequencing
+  -> flow control
+- Provides Layer 4 addressing (port numbers).
+  -> Identify the Application Layer protocol
+  -> Provides session multiplexing
+  -> The following ranges have been designated by IANA (Internet Assigned Numbers Authority)
+  Well-known port number: 0-1023
+  Registered port number: 1024 - 49151
+  Ephemeral/private/dynamic port number: 49152-65535
+
+TCP (Transmission Control Protocol) is connection-oritented.
+- Before actually sending data to the destination host, the two hosts communicate to establish a connection. Once the connection is established, the data exchange begins.
+
+TCP provides reliable communication
+- The destination host must acknowledge that it received each TCP segment.
+- If a segment isn't acknowledged, it is sent again.
+
+TCP provides sequencing.
+- Sequence numbers in the TCP header allow destination hosts to put segments in the correct order even if they arrive out of order.
+
+TCP provides flow control
+- The destination host can tell the source host to increase/decrease the rate that data is sent.
+
+Three-way Handshake
+SYN flag sent by source
+SYN flag, ACK flag sent by dest
+ACK flag sent by source
+
+Four-way Handshake
+FIN flag sent by source
+ACK flag sent by dest
+FIN flag sent by dest
+ACK flag sent by source
+
+Hosts set a random initial sequence number.
+Forward acknowledgement is used to indicate the sequence number of the next segment the hosts expects to receive.
+
+Acknowledging every single segment, no matter what size, is inefficient.
+The TCP header's Window Size field allows more data to be sent before an acknowledgment is required.
+A 'sliding window' can be used to dynamically adjust how large the window size is.
+
+UDP (User Datagram Procotol)
+UDP is not connection-oriented
+- The sending host does not establish a connection with the destination host before sending data. The data is simply sent.
+
+UDP does not provide reliable communication
+- When UDP is used, acknowledgments are not sent for received segments. If a segment is lost, UDP has no mechanism to re-transmit it. Segments are sent 'best-effor'.
+
+UDP does not provide sequencing
+- There is no sequence number field in the UDP header. If segments arrive out of order, UDP has no mechanism to put them back in order.
+
+UDP does not provide flow control.
+- UDP has no mechanism like TCP's window size to control the flow of data.
+
+![image](https://github.com/fernskers/CCNA/assets/57144399/a072f733-8b1f-458f-8107-72137f411397)
+
+TCP provides more features than UDP, but at the cost of additional overhead.
+For applications that require reliable communications (for expample downloading a file), TCP is preferred.
+For applications like real-time voice and video, UDP is preferred.
+There are some applications that use UDP, but provide reliability etc. within the application itself.
+Some applications use both TCP & UDP, depending on the situation.
+
+![image](https://github.com/fernskers/CCNA/assets/57144399/807a3fe6-4d45-40d3-8782-883849277205)
+
+Port Number to memorize
+*TCP*
+- FTP data (20)
+- FTP control (21)
+- SSH (22)
+- Telnet (23)
+- SMTP (25)
+- HTTP (80)
+- POP3 (110)
+- HTTPS (443)
+
+*UDP*
+- DHCP server (67)
+- DHCP client (68)
+- TFTP (69)
+- SNMP agent (161)
+- SNMP manager (162)
+- Syslog (514)
+
+*TCP & UDP*
+- DNS (53)
+
+'Internet Stream Protocol' was developed in the late 1970s, but never actually introduced for public use.
+It was never called 'IPv5', but it used a value of 5 in the Version field of the IP header.
+So, when the successor to IPv4 was being developed, it was named IPv6.
+
+The main reason IPv6 exists is that there is simply aren't enough IPv4 address available
+There are 4,294,967,296 (2^32) IPv4 addresses available.
+VLSM, private IPv4 addresses, and NAT have been used to conserve the use of IPv4 address space.
+Those are short-term solutions, IPv6 is the long term solution.
+
+IPv4 address assignments are controlled by IANA (Internet Assigned Numbers Authority)
+IANA distributes IPv4 address space to various RIRs (Regional Internet Registries), which then assign them to companies that need them.
+
+An IPv6 address is 128 bits.
+4*the bits of an IPv4 address = 4*the number of possible addresses? NO
+Every additional bit doubles the number of possible addresses.
+There are 340,282,366,920,938,463,463,374,607,431,768,211,456 IPv6 addresses.
+
+Shortening IPv6 addresses:
+Leading 0s can be removed.
+Consecutive quartets of all 0s can be replaced with a double colon (::)
+Consecutive quartets of 0s can only be abbreviated once in an IPv6 address.
+
+Finding the IPv6 prfix (global unicast addresses)
+- Typically, an enterprise requesting IPv6 addresses from their ISP will receive a /48 black.
+- Typically, IPv6 subnets use a /64 prefix length.
+- That means an enterprise has 16 bits to use to make subnets
+- The remaining 64 bits can be used for hosts.
+
+Configuring IPv6 addresses
+*ipv6 unicast-routing* allows the router to perform IPv6 routing
+*ipv6 address <ipv6-address/mask>*
+*show ipv6 interface brief*
+
+EUI stands for Extended Unique Identifier
+EUI-64 is a method of converting a MAC address (48 bits) into a 64-bit interface identifier.
+This interface identifier can then become the 'host portion' of a /64 IPv6 address.
+How to convert the MAC address:
+1. Divide the MAC address in half
+2. Insert FFFE in the middle
+3. Invert the 7th bit
+
+*ipv6 address <ipv6-address/mask> eui-64*
+
+Global unicast IPv6 addresses are public addresses which can be used over the Internet.
+Must register to use them. Because they are public addresses, it is expected that they are globally unique.
+Originally defined as the 2000::/3 block
+
+
+Unique local IPv6 addresses are private addresses which cannot be used over the Internet
+You do not need to register to use them. They can be used freely within internal networks and don't need to be globally unique (*). Can't be routed over the Internet.
+Uses the address block FC00::/7 
+However, a later update requires the 8th bit to be set to 1, so the first two digits must be FD.
+The global ID should be unique so that addresses don't overlap when companies merge.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
