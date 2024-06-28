@@ -1415,13 +1415,40 @@ Uses the address block FC00::/7
 However, a later update requires the 8th bit to be set to 1, so the first two digits must be FD.
 The global ID should be unique so that addresses don't overlap when companies merge.
 
+Link-local IPv6 addresses are automatically generated on IPv6 enable interfaces.
+Use command *ipv6 enable* on an interface to enable IPv6 on an interface
+Uses the address block FE80::/10
+However, the standard states that the 54 bits after FE80/10 should be all 0, so you won't see link local addresses beginning with FE9, FEA, or FEB. Only FE8.
+The interface ID is generated using EUI-64 rules.
+Link-local means that these addresses are used for communication within a single link (subnet).
+  Routers will not route packets with a link-local destination IPv6 address.
+Common uses of link-local addresses:
+  routing protocol peerings (OSPFv3 uses link-local addresses for neighbor adjacencies)
+  next-hop addresses for static routes
+  Neighbor Discovery Protocol (NDP, IPv6's replacement for ARP) uses link-local addresses to function.
 
+Multicast addresses
 
+IPv6 uses range FF00::/8 for multicast.
+IPv6 doesn't use broadcast
 
+![image](https://github.com/fernskers/CCNA/assets/57144399/a6eba978-2bfa-4a45-820b-806f116447c4)
 
+IPv6 defines multiple multicast 'scopes' which indicate how far the packet should be forwarded.
+The addresses in the previous slide all use the 'link-local' scope (FF02), which stays in the local subnet.
+IPv6 multicast scopes:
+  Interface-local (FF01): The packet doesn't leave the local device. Can be used to send traffic to a service within the local device.
+  Link-local (FF02): The packet remains in the local subnet. Routers will not route the packet between subnets.
+  Site-local (FF05): The packet can be forwarded by routers. Should be limited to a single physical location (not forwarded over a WAN).
+  Organization-local (FF08): Wider in scope than site-local
+  Global (FF0E): No boundaries. Possible to be routed over the Internet
+![image](https://github.com/fernskers/CCNA/assets/57144399/d60c7a98-2c96-4cf4-a6fe-09e36ceaba79)
 
-
-
+Anycast is a new feature of IPv6.
+Anycast is 'one-to-one-of many'
+Multiple routers are configured with the same IPv6 address.
+  They use a routing protocol to advertise the address.
+  When hosts sends packets to that destination address, routers will forward it to the nearest router configured with that
 
 
 
