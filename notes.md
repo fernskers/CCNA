@@ -1445,11 +1445,11 @@ IPv6 multicast scopes:
 ![image](https://github.com/fernskers/CCNA/assets/57144399/d60c7a98-2c96-4cf4-a6fe-09e36ceaba79)
 
 Anycast is a new feature of IPv6.
-Anycast is 'one-to-one-of many'
+Anycast is 'one-to-one-of-many'
 Multiple routers are configured with the same IPv6 address.
   They use a routing protocol to advertise the address.
   When hosts sends packets to that destination address, routers will forward it to the nearest router configured with that
-
+  
 
 
 
