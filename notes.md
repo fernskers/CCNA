@@ -1449,10 +1449,18 @@ Anycast is 'one-to-one-of-many'
 Multiple routers are configured with the same IPv6 address.
   They use a routing protocol to advertise the address.
   When hosts sends packets to that destination address, routers will forward it to the nearest router configured with that
-  
 
+There is no specific address range for anycast addresses. Use a regular unicast address (global unicast, unique local) and specify it as an anycast address *ipv6 address <ipv6-address/mask> anycast*
 
+:: = Unspecified IPv6 address
+Can be used when a device doesn't yet know its IPv6 address.
+IPv6 default routes are configured to ::/0
+IPv4 equivalent: 0.0.0.0
 
+::1 = The loopback address
+Used to test the protocol stack on the local device
+Messages sent to this address are processed within the local device, but not sent to other devices.
+IPv4 equivalent: 127.0.0.0/8 address range
 
 
 
