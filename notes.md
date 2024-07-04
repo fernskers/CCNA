@@ -1462,10 +1462,59 @@ Used to test the protocol stack on the local device
 Messages sent to this address are processed within the local device, but not sent to other devices.
 IPv4 equivalent: 127.0.0.0/8 address range
 
+An RFC (Request for Comments) is a publication from the ISOC (Internet Society) and associated organizations like the IETF (Internet Engineering Task Force), and are the official documents of Internet specifications, protocols, procedures, etc.
+RFC 5952 is 'A Recommendation for IPv6 Address Text Representation'
+Before this RFC, IPv6 address representation was more flexible e.g.
+- You could remove leading 0s, or leave them
+- You could replace all-0 quartets with ::, or leave them
+- You could use upper-case 0xA,B,C,D,E,F, or lower-case 0xa,b,c,d,e,f
+RFC 5952 suggests standardizing IPv6 address representation
 
+Leading 0s MUST be removed
+Double colon MUST be used to shorten the longest string of all-0s quartests
+If there are two equal-length choices for the ::, use :: to shorten the one on the left.
+Hexadecimal characters 'a','b','c','d','e', and 'f' MUST be written using lower-case, NOT upper-case
 
+IPv6 Header:
 
+![image](https://github.com/fernskers/CCNA/assets/57144399/13cc1302-83a9-44ee-98e5-2cf4537b24f9)
 
+Version field - Fixed value of 6
+Traffic Class field - Used for QoS (Quality of Service)
+Flow Label field - Used to identify specific traffic 'flows'
+Payload Lenght field - Indicates the length of the payload
+The length of the IPv6 header isn't included because its fixed
+Next Header field - Indicates the type of the 'next header' (e.g. TCP or UDP)
+Hop Limit - The value in this field is decremented by 1 by each router that forwards it. 
+Souce / Destination field - you should alr know.
+
+An IPv6 solicited-node multicast address is calculated from a unicast address.
+*ff02 :: 1 : ff* + Last 6 hex digits of unicast address
+
+Neighbor Discovery Protocol (NDP) is a protocol used with IPv6.
+It has various functions, and one of those functions is to replace ARP, which is no longer used in IPv6.
+The ARP-like function of NDP uses ICMPv6 and solicited-node multicast addresses to learn the MAC address of other hosts.
+Two messages types are used:
+1) Neighbor Solicitation (NS) = ICMPv6 Type 135
+2) Neighbor Advertisement (NA) = ICMPv6 Type 136
+
+Another function of NDP allows hosts to automatically discover routers on the local network.
+Two messages are used for this process:
+1) Router Solicitation (RS) = ICMPv6 Type 133
+   -Sent to multicast address FF02::2 (all routers).
+   -Asks all routers on the local link to identify themselves.
+   -Sent when an interface is enabled/host is connected to the network
+
+2) Router Advertisement (RA) = ICMPv6 Type 134
+   -Sent to multicast address FF02::1 (all nodes)
+   -The router announces its presence, as well as other information about the link
+   -These messages are sent in responce to RS messages.
+   -They are also sent periodically, even if the router hasn't recieved an RS.
+
+SLAAC (Stateless Address Auto-configuration)
+- Hosts use the RS/RA messages to learn the IPv6 prefix of the local link, and then automatically generate an IPv6 address.
+- Using the ipv6 address prefix/prefix-length eui-64 command, you need to manually enter the prefix.
+- Using the ipv6 address autoconfig
 
 
 
