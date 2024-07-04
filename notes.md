@@ -1512,9 +1512,97 @@ Two messages are used for this process:
    -They are also sent periodically, even if the router hasn't recieved an RS.
 
 SLAAC (Stateless Address Auto-configuration)
-- Hosts use the RS/RA messages to learn the IPv6 prefix of the local link, and then automatically generate an IPv6 address.
-- Using the ipv6 address prefix/prefix-length eui-64 command, you need to manually enter the prefix.
-- Using the ipv6 address autoconfig
+Hosts use the RS/RA messages to learn the IPv6 prefix of the local link, and then automatically generate an IPv6 address.
+Using the *ipv6 address <prefix/prefix-length> eui-64* command, you need to manually enter the prefix.
+Using the *ipv6 address autoconfig* command, you don't need to enter the prefix. The device uses NDP to learn the prefix used on the local link.
+The device will use EUI-64 to generate the interface ID, or it will be randomly generated.
+
+Duplicate Address Detection (DAD) allows hosts to check if other devices on the local link are using the same IPv6 address.
+Any time an IPv6-enabled interface initializes (no shutdown command), or an IPv6 address is configured on an interface (by any method: manual, SLAAC, etc.) it performs DAD.
+DAD uses two messages you learned earlier: NS and NA.
+The host will send an NS to its own IPv6 address. If it doesn't get a reply, it knows the address is unique.
+If it gets a reply, it means another host on th enetwork is already using the address.
+
+IPv6 Static Routing
+
+IPv6 routing is disabled by default, and must be enabled with *ipv6 unicast-routing*
+If IPv6 routing is disabled, the router will be able to send and receive IPv6 traffic, but will not route IPv6 (=will not forward it between networks).
+*ipv6 route <destination/prefix-length {next-hop | exit-interface [next-hop]) [ad] 
+
+Directly attached static route: Only the exit-interface is specified. (NOTE: In IPv6, you can't use directly attached static routes if the interface is an Ethernet interface)
+  *ipv6 route destination/prefix-length exit-interface*
+
+Recursive static route: Only the next hop is specified.
+  *ipv6 route destination/prefix-length next-hop*
+
+Fully specified static route: Both the exit interface and next hop are specified.
+  *ipv6 route destination/prefix-length exit-interface next-hop*
+
+ACLs (Access Control Lists) have multiple uses.
+ACLs function as a packet filter, instructing the router to permit or discard specific traffic.
+ACLs can filter traffic based on source/destination IP addresses, source/destination Layer 4 ports, etc.
+
+ACLs are configured globally on the router.
+They are an ordered sequence of ACEs. (Access Control Entries)
+
+Configuring an ACL in global config mode will not make the ACL take effect.
+The ACL must be applied to an interface.
+ACLS are applied either inbound or outbound.
+ACLs are mude up of one or more ACEs.
+When the router checks a packet against the ACL, it processes the ACEs in order, from top to bottom.
+If the packet matches one of the ACEs in the ACL, the router takes the action and stops processing the ACL. All entries below the matching entry will be ignored.
+
+There is an 'implicit deny' at the end of all ACLs.
+The implicit deny tells the router to deny all traffic that doesn't match any of the configured entries in the ACL.
+
+Standard ACLs: Match based on Source IP address only
+Extended ACLs: Match based on Source/Destination IP, Source/Destination port, etc.
+
+Standard ACLs match traffic based only on the source IP address of the packet.
+Numbered ACLs are identified with a number.
+Different types of ACLs have a different range of numbers that can be used.
+-> Standard ACLs can use 1-99 and 1300-1999.
+
+The basic command to configure a standard numbered ACL is:
+*access-list <number> {deny | permit} <ip> <wildcard-mask>*
+
+*do show access-lists* 
+*access-list <num> remark <comment>*
+
+applying to an interface: *ip access-group <num> {in | out}*
+Standard ACLs should be applied as close to the destination as possible.
+
+Named ACLs are identified with a name (ie. BLOCK_BOB)
+Standard named ACLs are configured by entering 'standard named ACL config mode', and then configuring each entry within that config mode.
+*ip access-list standard <acl-name>*
+*<entry-number> {deny | permit} <ip> <wildcard-mask>*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
