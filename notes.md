@@ -1577,16 +1577,38 @@ Standard named ACLs are configured by entering 'standard named ACL config mode',
 *ip access-list standard <acl-name>*
 *<entry-number> {deny | permit} <ip> <wildcard-mask>*
 
+Advantages of named ACL config mode:
+- You can easily delete individual entries in the ACL with *no <sequence-number>*
+- You can insert new entries in between other entries by specifying the sequence number
 
+Reqseuencing ACLs
+- There is a resequencing function that helps edit ACLs
+- The command is *ip access-list resequence <acl-id> <starting-seq-num> <increment>*
 
+Extended ACLs
+- Extended ACLs function mostly the same as standard ACLs.
+- They can be numbered or named, just like standard ACLs.
+  - Numbered ACLs use the following ranges: 100 - 199, 2000 - 2699
+- They are processed from top to bottom, just like standardd ACLs
+- However, the can match traffic based on more parameters, so they are more precise than standard ACLs
+- *access-list <number> (permit | deny) <protocol> <src-ip> <dest-ip>*
+- *ip access-list extended (name | number)*
+- *(seq-num) (permit | deny) <protocol> <src-ip> <dest-ip>*
 
+In extended ACLs, to specify a /32 source or destination you have to use the host option or specify the wildcard mask. You can't just write the address without either of those.
 
+When matching TCP/UDP, you can optionally specify the source and/or destination port numbers to match.
 
+eq 80 = equal to port 80
+gt 80 = greater than 80 (81 and greater)
+lt 80 = less than 80 (79 and less)
+neq 80 = NOT 80
+range 80 100 = from port 80 to port 100
 
+Extended ACLs should be applied as close to the source as possible, to limit how far the packets travel in the network being denied.
 
-
-
-
+Layer 2 discovery protocols such as CDP and LLDP share information with and discover information about neighboring (connected) devices.
+The shared information includes host name, IP address, device type, etc.
 
 
 
