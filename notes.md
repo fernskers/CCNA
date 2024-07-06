@@ -1609,39 +1609,117 @@ Extended ACLs should be applied as close to the source as possible, to limit how
 
 Layer 2 discovery protocols such as CDP and LLDP share information with and discover information about neighboring (connected) devices.
 The shared information includes host name, IP address, device type, etc.
+CDP is a Cisco proprietary protocol.
+LLDP is an industry standard protocol (IEEE 802.1AB)
+Because they share information about the devices in the network, they can be considered a security risk and are often not used. It is up to network engineer/admin to decide if they want
+to use thme in the network or not.
 
+CDP (Cisco Discovery Protocol)
+- It is enabled on Cisco devices by default.
+- CDP messages are periodically sent to multicast MAC address 0100.0CCC.CCCC.
+- When a device receives a CDP message, it processes and discards the message. It does NOT forward it to other devices.
+- By default, CDP messages ar esent once every 60 seconds.
+- By default, the CDP hold time is 180 seconds. If a message isn't received from a neighbor for 180 seconds, the neighbor is removed from the CDP neighbor table.
+- CDPv2 messages are sent by default.
 
+*show cdp*
+*show cdp traffic*
+*show cdp interface*
+*show cdp neighbors*
+*show cdp neighbors detail*
+*show cdp entry <name>*
 
+*cdp run* global only
+*cdp enable* interface only
+*cdp timer <seconds>*
+*cdp holdtime <seconds>*
+*cdp advertise-v2*
 
+LLDP (Link Layer Discovery Protocol)
+- It is usually disabled on Cisco by default, so it must be manually enabled.
+- A device can run CDP and LLDP at the same time.
+- LLDP messages are periodically sent to multicast MAC address 0180.C200.000E
+- When a device receives an LLDP message, it processes and discards the message. It does NOT forward it to other devices.
+- By default, LLDP messages are sent once every 30 seconds.
+- By default, LLDP holdtime is 120 seconds.
+- LLDP has an additional timer called the 'reinitialization delay'. If LLDP is enabled, this timer will delay the actual initialization of LLDP. 2 seconds by default.
 
+*lldp run* globally enable
+*lldp transmit* enable lldp transmissions on specific interfaces
+*lldp receive* enable lldp receiving
+*lldp timer <seconds>*
+*lldp holdtime <seconds>*
+*lldp reinit <seconds>*
 
+*show lldp*
+*show lldp traffic*
+*show lldp interface*
+*show lldp neighbors*
 
+All devices have an internal clock (routers, switches, your PC, etc.)
+In Cisco IOS, you can view the time with the *show clock* command.
+The default time zone is UTC (Coordinated Universal Time).
+If you use the *show clock detail* command, you can see the time source.
+The internal hardware clock of a device will drift over time, so it is not the ideal time source.
+From a CCNA perspective, the most important reason to have accurate time on a device is to have accurate logs for troubleshooting.
 
+*show logging*
 
+You can manually configure the time on the device with the *clock set* command.
+*show clock detail*
 
+Although the hardware calendar is the default time-source, the hardware clock and software clock are separate and can be configured separately.
 
+You can manally configure the hardware clock with the *calendar set* command
+*show calendar*
 
+Typically you will want to synchronize the 'clock' and 'calendar'.
+Use the command *clock update-calendar* to sync the calendar to the clock's time.
+Use the command *clock read-calendar* to sync the clock to the calendar's time.
 
+You can configure the time zone with the *clock timezone* command.
 
+*clock summer-time <timezone>* daylight savings time
 
+NTP (Network Time Protocol)
+- Manually configuring the time on devices is not scalable
+- The manually configured clocks will drift, resulting in inaccurate time.
+- NTP (Netowrk Time Protocol) allows automatic syncing of time over a network.
+- NTP clients request the time from NTP servers.
+- A device can be an NTP server and an NTP client at the smae time.
+- NTP allows accuracy of time within ~1 millisecond if the NTP server is in the same LAN, or within ~50 milliseconds if connecting to the NTP server over a WAN/the Internet
+- Some NTP servers are 'better' than ohters. The 'distance' of an NTP server from the original reference clock is called stratum
+- NTP uses UDP port 123 to communicate
 
+Reference Clocks
+- A reference clock is usually a very accurate time device like an atomic clock or a GPS clock.
+- Reference clocks are stratum 0 within the NTP hierarchy.
+- NTP servers directly connected to reference clocks are stratum 1.
 
+Reference clocks are stratum 0.
+Stratum 1 NTP servers get their time from reference clocks.
+Stratum 2 NTP servers get their time form stratrum 1 NTP servers.
+Stratum 3 NTP servers get their time form stratrum 2 NTP servers.
+Stratum 15 is the maximum. Anything above that is considered unreliable.
+Devices can also 'peer' with devices at the same stratum to provide more accurate time.
+An NTP client can sync to multiple NTP servers.
+NTP servers which get their time directly from reference clocks are also called primary servers.
+NTP servers which get their time from other NTP servers are called secondary servers. They operate in server mode and client mode at the same time.
 
+*ntp server <ip-add>*
+*show ntp association*
+*show ntp status*
+*do show clock detail*
+*ntp source <add>*
+*ntp server <add>*
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+The default stratum of the ntp master command is 8.
+NTP authentication can be configured, although it is optional.
+It allows nTP clients to ensure they only sync to the intended servers.
+*ntp authenticate* (enable NTP authentication)
+*ntp authentication-key <key-number> md5 <key>* (create the NTP authentication key(s))
+*ntp trusted-key <key-number>* (specify the trusted key(s))
+*ntp server <ip-add> key <key-num>* (specify which key to use for the server)
 
 
 
