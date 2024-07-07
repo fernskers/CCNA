@@ -1721,6 +1721,87 @@ It allows nTP clients to ensure they only sync to the intended servers.
 *ntp trusted-key <key-number>* (specify the trusted key(s))
 *ntp server <ip-add> key <key-num>* (specify which key to use for the server)
 
+DNS is used to resolve human-readable names (google.com) to IP addresses.
+Machines such as PCs don't use names, they use addresses.
+Names are much easier for us to use and remember than IP addresses.
+-> What's the IP address of youtube.com
+When you type 'youtube.com' into a web browser, your device will ask a DNS server for the IP address of youtube.com
+The DNS server(s) your device uses can be manually configured or learned via DHCP.
+
+DNS 'A' record = Used to map names to IPv4 addresses.
+DNS 'AAAA' record = Used to map names to IPv6 addresses.
+Standard DNS queries/responses typically use UDP. TCP is used for DNS messages greater than 512 bytes. In either case, port 53 is used.
+Devices will save the DNS server's responses to a local DNS cache. This means they don't have to query the server every single time they want to access a particular destination.
+*ipconfig /displaydns*
+*ipconfig /flushdns* ->clear DNS resolve cache
+Most devices have a hosts file /Windows/System32/drivers/etc/hosts (this is not DNS)
+
+For hosts in a network to use DNS, you don't need to configure DNS on the routers. They will simply forward the DNS messages like any other packet.
+However a Cisco router can be configured as a DNS server, although it's rare.
+  -> If an internal DNS server is used, usually it's a Windows or Linux server.
+A Cisco router can also be configured as a DNS client.
+*ip dns server* (configure route to act as a dns server)
+*ip host <name> <ip-add>* (configure a list of hostname/ip address mappings)
+*ip name-server <ip-add>* (configure a DNS server that the router will query if the requested record isn't in its host table)
+*ip domain lookup* (enable the router to perform DNS queries)
+*show hosts*
+*ip domain name <domain-name>* (configure the default domain name; this will be automatically appended to any hostnames without a specified domain)
+
+DHCP is used to allow hosts to automatically/dynamically learn various aspects of their network configuration, such as IP address, subnet mask, default gateway, DNS server, etc, without manual/static configuration.
+It is an essential part of modern networks.
+Typically used for 'client devices' such as workstations, phones, etc.
+Devices such as routers, servers, etc, are usulaly manually configured.
+In small networks (such as home networks) the router typically acts as the DHCP server for hosts in the LAN.
+In larger networks, the DHCP server is usually a Windows/Linux server.
+
+DHCP server 'lease' IP address to clients.
+These leases are usually not permanent, and the client must give up the address at the end of the lease.
+
+*ipconfig /release* release dhcp learned ip address
+
+DHCP servers use UDP 67.
+DHCP clients use UDP 68.
+
+*ipconfig /renew* get an ip address from a dhcp server
+
+DHCP Discover, a broadcast message from the client. 
+DHCP Offer, server to client, offering an IP address.
+DHCP Request, client to server, wants to use the IP address that was offered.
+DHCP Ack, server to client, "you can use it lil bro".
+
+![image](https://github.com/fernskers/CCNA/assets/57144399/9fa27202-5bf1-4707-a65a-4f1324b1c811)
+
+Some network engineers might choose to configure each router to acta s the DHCP server for its connected LANs.
+However, large eterprises often choose to use a centralized DHCP server.
+If the server is centralized, it won't receive the DHCP clients' broadcast DHCP messages. (broadcast messages don't leave the local subnet)
+To fix this, you can configure a router to act as a DHCP relay agent.
+The router will forward the clients' broadcast DHCP messages to the remote DHCP server as unicast messages.
+
+*ip dhcp excluded-address <ip-add> <ip-add>* (specify a range of addresses that won't be given to DHCP clients.
+*ip dhcp pool <name>* (create a DHCP pool)
+*network <ip-add> <mask>* (specify the subnet of addresses to be assigned to clients)
+*dns-server <ip-add>* (specify the DNS server that DHCP clients should use)
+*domain-name <domain-name>* (specify the domain name of the network)
+*default-router <ip-add>* (specify the default gateway)
+*lease <days> <hours> <minutes>* (specify the lease time)
+*show ip dhcp binding* 
+*ip helper-address <ip-add>* (configure the ip address of the dhcp server as the 'helper' address)(This command is used at the interface connected to the subnet of the client devices)
+*ip address dhcp* (tell the router to use DHCP to learn its IP address)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
