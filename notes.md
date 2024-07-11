@@ -1842,6 +1842,100 @@ SNMP Manager = UDP 162
 In SNMPv1 and SNMPv2c, there is no encryption. The community and message contents are sent in plain-text. This is not
 secure, as the packets can easily be captured and read.
 
+By default, no password is needed to access the CLI of a CIsco IOS device via the console port.
+You can configure a password on the console line.
+  A user will have to enter a password to access the cLI via the console port.
+
+*line console 0* (There is only a single console line, so the number is always 0)
+*password <passowrd>* (Configure the console line's password)
+*login* (Tell the device to require a user to enter the configured password to access the CLI via the console port.)
+
+Alternatively, you can configure the console line to require users to login using one of the configured usernames on the device.
+
+*username <user> secret <passwrd>*
+*line console 0*
+*login local* (Tell the device to require a user to login using one of the configured usernames on the device)
+
+Layer 2 switches don't perform packet routing and don't build a routing table. They aren't IP routing aware.
+However, you can assign an IP address to an SVI to allow remote connections to the CLI of the switch (using Telnet or SSH).
+Configure the IP address on the SVI in the same way as on a multilayer switch. Enable the interface if necessary.
+Configure the switch's default gateway. In this case, PC2 isn't in the same LAN as SW1. If SW1 doesn't have a default gateway, it can't communicate with PC2.
+
+Telnet (Teletype Newtork) is a protocol used to remotely access the CLI of a remote host.
+Telnet was developed in 1969.
+Telnet has been largely replaced by SSH, which is more secure.
+Telnet sends data in plain text.
+Telnet server listens for Telnet traffic on TCP port 23.
+
+*enable secret <passwrd>* (If an enable password isn't configured,  you won't be able to access privileged exec mode when connecting via Telnet)
+*access-list <num> permit host <ip-add>* (configure an ACL to limit which devices can connect to the VTY lines)
+*line vty 0 15* (Telnet/SSH access is configured on the VTY lines. There are 16 lines available, so up to 16 users can be connected at once. (VTY stands for Virtual TeleType)
+*login local*
+*exec-timeout 5 0*
+*transport intput telnet* (allows only Telnet connections)
+*access-class 1 in* (apply the ACL to the VTY lines, access-class applies an ACL to the VTY lines, ip access-group applies an ACL to an interface)
+
+SSH (Secure Shell) was developed in 1995 to replace less secure protocols like Telnet.
+SSHv2, a major revision of SSHv1, was realeased in 2006.
+If a device supports both version 1 and version 2, it is said to run 'version 1.99'.
+Provides security features such as data encryption and authentication.
+The SSH server listens for SSH traffic on TCP port 22.
+
+IOS images that support SSH will ahve 'K9' in their name.
+Cisco exports NPE (No Payload Encryption) IOS images to countries that have restrictions on encryption technologies.
+NPE IOS images do not support cryptographic features such as SSH.
+
+*show version*
+*show ip ssh*
+
+To enable and use SSH, you must generate an RSA public and private key pair.
+The keys are used for data encryption/decryption, authentication, etc.
+
+*ip domain name <domain-name>* (The FQDN of the device is used to name the RSA keys. FQDN = Fully Qualified Domain Name (host name + domain name).
+*crypto key generate rsa* (Generate the RSA keys. * length must be 768 bits or greater for SSHv2)
+*do show ip ssh*
+
+*enable secret <passwd>*
+*username <user> secret <passwd>*
+*access-list <num> permit host <ip-add>*
+*ip ssh version <num>* (optional, but recommended) (Restrict SSH to version 2 onlly)
+*line vty 0 15* (configure all vty lines, just like telnet)
+*login local* (enable local user authentication *you cannot use *login* for SSH, only *local login*)
+*exec-timeout <min> <sec>* (optional, but recommended) configure the exec timeout
+*transport input ssh* (best practice is to limit vty line connections to SSH only
+*access-class <num> in* (optional, but recommended) apply the acl to restrict Vty line connections
+
+SSH Configuration
+1) Configure host name
+2) Confiure DNS domain name
+3) Generate RSA key pair
+4) Configure enable PW, username/PW
+5) Enable SSHv2 (only)
+6) Configure VTY lines
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
