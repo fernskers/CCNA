@@ -1788,14 +1788,59 @@ The router will forward the clients' broadcast DHCP messages to the remote DHCP 
 *ip helper-address <ip-add>* (configure the ip address of the dhcp server as the 'helper' address)(This command is used at the interface connected to the subnet of the client devices)
 *ip address dhcp* (tell the router to use DHCP to learn its IP address)
 
+Simple Network Management Protocol
+- SNMP is an industry-standard framework and protocol that was originally released in 1988.
+- RFC 1065 Structure and identification of management information for TCP/IP-based internets
+- RFC 1066 Managemnt information base for netowrk management of TCP/IP-based interfnets
+- RFC 1067 A simple network management protocol
+- SNMP can be used to monitor the status of devices, make configuration changes, etc.
+- There are two main types of devices in SNMP:
+- 1) Managed Devices (There are the devices being managed using SNMP, e.g. network devices like routers and switches)
+  2) Network Management Station (NMS) (The device/devices managing the managed devices, this is the SNMP 'server')
 
+There are three main operations used in SNMP.
+1) Managed devices can notify the NMS of events.
+2) The NMS can ask the managed devices for information about their current status.
+3) The NMS can tell the managed devices to change aspects of their configuration.
 
+The SNMP Manager is the software on the NMS that interacts with the managed devices.
+  It recieves notications, sends requests for information, sends configuration changes, etc.
+The SNMP Application provides an interface for the network admin to interact with.
+ Displays alerts, statistics, charts, etc.
 
+The SNMP Agent is the SNMP software running on the managed devices that interacts with the SNMP Manager on the NMS.
+ It sends notifications to/receives messages form the NMS.
 
+The Management Information Base (MIB) is the structure that contains the variables that are managed by SNMP
+  Each variable is identified with an Object ID (OID)
+  Example variables: Interface status, traffic throughput, CPU usage, temperature, etc.
 
+SNMP Object IDs are organized in a hierarchical structure.
 
+Many versions of SNMP have been proposed/developed, however only three major versions have achieved wide-spread use:
 
+SNMPv1
+  The original version of SNMP
+SNMPv2c
+  Allows the NMS to retrieve large amounts of information in a single request, so it is more efficient.
+  'c' refers to the 'community strings' used as passwords in SNMPv1, removed from SNMPv2, and then added back for SNMPv2c.
+SNMPv3
+  A much more secure version of SNMP that suppoerts strong encryption and authentication. Whever possible, this version should be used!
+  
+![image](https://github.com/fernskers/CCNA/assets/57144399/6e546c57-9e6e-47a3-a9d7-0c5acfb3d0b2)
 
+SNMP Agent = UDP 161
+SNMP Manager = UDP 162
+
+*snmp-server contact <contact-name>* optional
+*snmp-server location <location-name>* optional
+*snmp-server community <communitystringname> <ro | rw>* ro = read only rw = read/write (can use Set messages)
+*snmp-server host <ip-add> version <version> <communitystringname>*
+*snmp-server enable traps snamp linkdown linkup* (configure the trap types to send to the nms)
+*snmp-server enable traps config*
+
+In SNMPv1 and SNMPv2c, there is no encryption. The community and message contents are sent in plain-text. This is not
+secure, as the packets can easily be captured and read.
 
 
 
