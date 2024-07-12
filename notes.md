@@ -1842,6 +1842,8 @@ SNMP Manager = UDP 162
 In SNMPv1 and SNMPv2c, there is no encryption. The community and message contents are sent in plain-text. This is not
 secure, as the packets can easily be captured and read.
 
+![image](https://github.com/user-attachments/assets/d94a9990-7f20-4fa4-93c3-eb1a4c09e512)
+
 By default, no password is needed to access the CLI of a CIsco IOS device via the console port.
 You can configure a password on the console line.
   A user will have to enter a password to access the cLI via the console port.
@@ -1913,23 +1915,113 @@ SSH Configuration
 5) Enable SSHv2 (only)
 6) Configure VTY lines
 
+FTP (File Transfer Protocol) and TFTP (Trivial File Transfer Protocol) are industry standard protocols used to transfer files over a network.
+They both use a client-server model.
+-> Clients can use FTP or TFTP to copy files from a server.
+-> Clients can use FTP or TFTP to copy files to a server.
+As a network engineer, the most common use for FTP/TFTP is in the process of upgrading the operating system of a network device.
+You can use FTP/TFTP to download the newer version of IOS from a server, and then reboot the device with the new IOS image.
 
+TFTP was first standardized in 1981.
+Named 'Trivial' because it is simple and has only basic features compared to FTP.
+-> Only allows a client to copy a file to or from a server.
+Was released after FTP, but is not a replacement for FTP. It is another tool to use when lightweight simplicity is more impmortant than functionality.
+No authentication (username/PW), so servers will respond to all TFTP requests.
+No encryption, so all data is sent in plain text.
+Best used in a controlled environment to transfer small files quickly
+TFTP servers listen on UDP port 69.
+UDP is connectionless and doesn't provide reliabiltiy with rtransmissions.
+However, TFTP has similar built-in features within the protocol itself.
 
+Every TFTP data message is acknowledged.
+-> If the client is transferring a file to the servver, the server will send Ack messages.
+-> If the server is transferring a file to the client, the client will send Ack messages.
+Timers are used, and if an expected message isn't received in time, the waiting device will re-send its previous message.
+TFTP uses 'lock-step' communication. The client and server alternately send a message and then wait for a reply. (+ retransmissions are sent as needed)
 
+TFTP 'Connections'
+TFTP file transfers have three phases:
+1: Connection: TFTP client sends a request to the server, and the server responds back, initializing the connection.
+2: Data Transfer: The client and server exchange TFTP messages. One sends data and the other sends acknowledgments.
+3: Connection Termination: After the last data message has been sent, a final acknowledgment is sent to terminate the connection.
 
+FTP was first standardized in 1971.
+FTP uses TCP ports 20 and 21.
+Usernames and passwords are used authentication, however there is no encryption.
+For greater security, FTPS (FTP over SSL/TLS) can be used.
+SSH File Transfer Protocol (SFTP) can also be used for greater security.
+FTP is more complex than TFTP and allows not only file transfers, but clients can also navigate file directories, add and remove directories, list files, etc.
+The client sends FTP commands to the server to perform these functions.
 
+FTP uses two types of connections:
+-> An FTP control connection (TCP 21) is established and used to send FTP commands and replies.
+When files or data are to be transferred, separate FTP data (TCP 20) connections are established and termiated as needed.
 
+The default method of establishing FTP data connections is active mode, in which the server initiates the TCP connection.
+In FTP active mode, the server initiates the data connection.
 
+In FTP passive mode, the client initiates the data connection. This is often necessary when the client is behind a firewall, which could block the incoming connection from the server.
+Firewalls usually don't permit 'outside' devices to initiate connections. In this case, FTp passive mode is used and the client (behind firewall) initiates the TCP connection.
 
+![image](https://github.com/user-attachments/assets/4da84dfd-020d-495f-9208-1d4ec4e88bf9)
 
+IOS File Systems
 
+A file system is a way of controlling how data is stored and retrieved.
+You can view the file systems of a Cisco IOS device with *show file systems*
+disk - storage devices such as flash memory
+opaque - used for internal functions
+nvram - internal nvram. the startup-config file is stored here
+network - represents external file systems e.g. external FTP/TFTP servers.
 
+You can view the current version of IOS with *show version*
+You can view the contents of flash with *show flash*
 
+Copying files (TFTP)
+*copy tftp: <destination>*
 
+*boot system <filepath>* (boots this ios file)
+*delete <filepath>* deletes file
 
+Copying Files (FTP)
+*ip ftp username <user>*
+*ip ftp password <pass>*
+*copy ftp: <dest>*
 
+IPv4 doesn't provide enough addresses for all devices that need an IP address in the modern world.
+The long-term solution is to switch IPv6.
+There are three main short-term solutions:
+1) CIDR
+2) Private IPv4 addresses
+3) NAT
 
+RFC 1918 specifies the following IPv4 address ranges as private:
+10.0.0.0/8 (10.0.0.0 to 10.255.255.255)
+172.16.0.0/12 (172.16.0.0 to 172.31.255.255)
+192.168.0.0/16 (192.168.0.0 to 192.168.255.255)
 
+Private IP addresses cannot be used over the Internet!
+Two problems:
+1) Duplicate addresses
+2) Private IP addresses can't be used over the Internet, so the PCs can't access the Internet.
+
+Network Address Translation (NAT) is used to modify the source and/or destination IP addresses of packets.
+There are various resasons to use NAT, but the most common reason is to allow hosts with private IP addresses to communicate with other hosts over the Internet.
+
+Static NAT involves statically configuring one-to-one mappings of private IP addresses to public IP addresses.
+An inside local IP address is mapped to an inside global IP address.
+  -> Inside Local = The IP address of the inside host, from the perspective of the local network *ip address actually ocnfiugred on the inside host, usually priv address
+  -> Inside Global = The IP address of the inside host, from the perspective of outside hosts. *ip address of the inside host after NAT, usually public address
+  -> Outside Local = The IP address of the outside host, from the perspective of the local network
+  -> Outside Global = The IP address of the outside host, from the perspective of the outside network
+  
+Static NAT allows devices with private IP addresses to communicate over the Internet. However, because it requires a one-to-one IP address mapping, it doesn't help preserve IP addresses.
+*ip nat inside* (define the 'inside' interface connected to the internal network)
+*ip nat outside* (define the 'outside' interface connected to the external network)
+*ip nat inside source static <inside-local-ip> <inside-global-ip>* (configure the one-to-one IP address mappings)
+*show ip nat translations*
+*clear ip nat translation <astrik>*
+*show ip nat statistics*
 
 
 
