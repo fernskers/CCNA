@@ -2023,6 +2023,111 @@ Static NAT allows devices with private IP addresses to communicate over the Inte
 *clear ip nat translation <astrik>*
 *show ip nat statistics*
 
+In dynamic NAT, the router dynamically maps inside local addresses to inside global adddresses as needed.
+An ACL is used to identify which traffic should be translated.
+  If the source IP is permitted by the ACL, the source IP will be translated.
+  If the source IP is denied by the ACL, the source IP will NOT be translated. (traffic won't be dropped)
+A NAT pool is used to define the available inside global addresses that can be used.
+Although they are dynamically assigned, the mappings are still one-to-one (one inside local IP address per inside global IP address)
+If there aren't enough inside global IP addresses available, it is called 'NAT pool exhaustion'.
+  If a packet from another inside host arrives and needs NAT but there are no available addresses, the router will drop the packet.
+  The host will be unable to access outside networks until one of the inside global IP addresses becomes available.
+  Dynamic NAT entries will time out automatically if not used, or you can clear them manually.
+
+*ip nat inside* (define the inside interfaces connected to the internal network)
+*ip nat outside* (define the outside interface connected to the external network)
+*access-list <num> permit <ip-add> <sub-mask>* (define the traffic that should be translated)
+*ip nat pool <pool-name> <glob-ip-add> <glob-ip-add> prefix-length <mask-num>* (define the pool of inside global IP addresses)
+*ip nat inside source list <acl-num> pool <pool-name>* (configure dynamic NAT by mapping the acl to the pool)
+
+PAT (aka NAT overload) translates both the IP address and the port number.
+By using a unique port number for each communication flow, a single public IP address can be used by many different internal hosts. (port numbers are 16 bits = over 65,000 available port numbers)
+The router will keep track of which inside local address is using which inside global address and port.
+Because many inside hosts can share a single public IP, PAT is very useful for preserving public IP addresses, and it is used in networks all over the world.
+
+*ip nat inside source list <acl-num> pool <pool-name> overload* (configure PAT)
+*ip nat inside source list <acl-num> interface <out-interface> overload* (configure PAT by mapping the ACL to the interface and enabling overload*
+
+Traditional phones operate over the public switched telephone network (PSTN)
+Sometimes this is called POTS (Plain Old Telephone Service)
+IP phones use VoIP (Voice over IP) technologies to enable phone calls over an IP network, such as the Internet.
+IP phones are connected to a switch just like any other end host.
+
+IP phones have an internal 3-port switch.
+ 1 port is the 'uplink' to the external switch.
+ 1 port is the 'downlink' to the PC.
+ 1 port connects internally to the phone itself.
+This allows the PC and the IP phone to share a single switch port. Traffic from the PC passes through the IP phone to the switch.
+It is recommended to seperate 'voice' traffic (from the IP phone) and 'data' traffic (from the PC) by placing them in separate VLANs.
+  This can be accomplished using a voice VLAN.
+  Traffic from the PC will be untagged, but traffic from the phone will be tagged with a VLAN ID
+  
+*switchport voice vlan <num>* (Swith will use CDP to tell phone to tag its traffic in VLAN)
+
+Although the interface sends/receives traffic from two VLANs, it is not considered a trunk port. It is considered an access port.
+
+PoE allows Power Sourcing Equipment (PSE) to provide power to Powered Devices (PD) over an Ethernet cable.
+Typically the PSE is a switch and the PDs are IP phones, IP cameras, wireless access points, etc.
+The PSE receives AC power from the outlet, converts it to DC power, and supplies that DC power to the PDs.
+Too much electrical current can damage electrical devices.
+PoE has a process to determine if a connected device needs power, and how much power it needs.
+  When a device is connected to a PoE-enabled port, the PSE (switch) sends low power signals, monitors the response, and determines how much power the PD needs.
+  If the device needs power, the PSE supplies the power to allow the PD to boot.
+  The PSE continues to monitor the PD and supply the required amount of power
+Power policing can be configurind to prevent a PD from taking too much power.
+  *power incline police* configures power policing with the default settings: disalbe the port and send a Syslog message if a PD draws too much power.
+    equivalent to *power inline police action err-disable*
+    the interface will be put in an 'error-disabled' state and can be re-enabled with shutdown followed by no shtudown.
+  *power inline police action log* does not shut down the interface if the PD draws too much power. It will restart the interface and send a Syslog message.
+
+![image](https://github.com/user-attachments/assets/63f0c877-3aa4-45bf-95c1-8bc9df643999)
+
+Voice traffic and data traffic used to use entirely separate networks.
+  Voice traffic used the PSTN
+  Data traffic used the IP network (enterprise WAN, Internet, etc.)
+QoS wasn't necessary as the different kinds of traffic didn't compete for bandwidth.
+
+Modern networks are typically converged networks in which IP phones, video traffic, regular data traffic, etc. all share the same IP network
+This enable cost saings as well as more advanced features for voice and video traffic, for example integrations with collaboraiton software (Cisco WebEx, Microsoft Teams, etc).
+However, the different kinds of traffic now have to compete for bandwidth.
+QoS is a set of tools used by network devices to apply different treatment to different packets.
+
+QoS is used to manage the following characteristics of network traffic:
+1) Bandwidth
+   The overall capactiy of the link, measured in bits per second (Kbps, Mbps, Gbps, etc)
+   QoS tools allow you to reserve a certain amount of a link's bandwidth for specific kinds of traffic.
+     For example: 20% voice traffic, 30% for specific kinds of data traffic, leaving 50% for all other traffic.
+
+2) Delay
+   The amount of time it takes traffic to go from source to destination = one-way delay
+   The amount of time it takes traffic to go from source to destination and return = two-way delay
+
+3) Jitter
+   The variation in one-way delay between packets sent by the same application
+   IP phones have a 'jitter buffer' to provide a fixed delay to audio packets.
+   
+4) Loss
+   The % of packets sent that do not reach their destination
+   Can be caused by faulty cables
+   Can also be caused when a device's packet queues get full and the device starts discarding packets.
+   
+The following standards are recommended for acceptable interactive audio (ie. phone call) quality:
+One-way delay: 150 ms or less
+Jitter: 30 ms or less
+Loss: 1% or less
+If these standards are not met, there could be a noticeable reduction in the qulity of the phone call.
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
