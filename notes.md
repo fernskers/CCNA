@@ -2117,31 +2117,117 @@ Jitter: 30 ms or less
 Loss: 1% or less
 If these standards are not met, there could be a noticeable reduction in the qulity of the phone call.
 
+If a network device receives messages fsater than it can forward them out of the appropriate interface, the messages are placed in a queue.
+By default, queued messages will be forwarded in a First In First Out (FIFO) manner.
+  Messages will be sent in the order thay are received.
+If the queue is full new packets will be dropped.
+This is called tail drop.
 
+Tail drop is harmful because it can lead to TCP global synchrionization.
+Review of the TCP sliding window:
+  Hosts using TCP use the 'sliding window' increase/decrease the rate at which they send traffic as needed.
+  When a packet is dropped it will be retransmitted.
+  When a drop occurs, the sender will reduce the rate it sends traffic.
+  It will then gradually increase the rate again.
+When the queue fills up and tail drop occurs, all TCP hosts sending traffic will slow down the rate at which they send traffic.
+They will all then increase the rate at which they send traffic, which rapidly leads to more congestion, dropped packts, and the process repeats again.
 
+A solution to prevent tail drop and TCP global synchronization is Random Early Detection (RED).
+When the amount of traffic in the queue reaches a certain threshold, the device will start randomly dropping packets from select TCP flows.
+Those TCP flows that dropped packets will reduce the rate at which traffic is sent, but you will avoid gloval TCP syncronization, in which ALL TCP flows reduce and then 
+increase the rate of transmission at the same time in waves.
 
+In standard RED, all kinds of traffic are treated the same.
+An improved version, Weighted Random Early Detection (WRED), allows you to control which packets are dropped depending on the traffic class.
 
+The purpose of QoS is to give certain kinds of network traffic priority over others during congestion.
+Classification organizes network traffic (packets) into traffic classes (categories).
+Classification is fundamental to QoS. To give priority to certain types of traffic, you have to identify whicih types of traffic to give priority to.
+There are many methods of classifying traffic. e.g.
+  An ACL. Traffic which is permitted by the ACL will be given certain treatement, other traffic will not.
+  NBAR (Network Based Application Recongnition) performs a deep packet inspection, looking beyond the Layer 3 and Layer 4 information up to Layer 7 to identify the specific kind of traffic.
+  In the Layer 2 and Layer 3 headers there are specific fields used for this purpose.
 
+The PCP (Priority Code Point) field of the 802.1Q tag (in the Ethernet header) can be used to identify high/low priority traffic.
+  Only when there is a dot1q tag
+The DSCP (Differentiated Services Code Point) field of the IP header can also be used to identify high/low priority traffic.
+PCP is also known as CoS (Class of Service). Its use is defined by IEEE 802.1p
+3 bits = 8 possible values (2^3 = 8)
 
+![image](https://github.com/user-attachments/assets/50a28339-a844-4418-9bb9-7a05a0ff09c9)
 
+Best effort delivery means there is no guarentee that data is delivered or that it meets any QoS stadard. This is regular traffic, not high-priority.
+IP phones mask call signaling traffic (used to establish calls) as PCP3. They mark the actual voice traffic as PCP5.
+Because PCP is found in the dot1q header, it can only be used over the following connections:
+  trunk links
+  access links with a voice VLAN
 
+RFC 2474 (1998) defines the DSCP field, and other 'DiffServ' RFCs elaborate on its use.
+With IPP updated to DSCP, new standard marking had to be decided upon.
+  By having generally agreed upon standard markings for different kinds of traffic, QoS design & implementation is simplified, QoS works between ISPs and enterprises, among other benefits.
 
+Default Forwarding (DF) - best effor traffic
+Expedited Forwarding (EF) - low loss/latency/jitter traffic (usually voice)
+Assured Forwarding (AF) - A set of 12 standard values
+Class Selector (CS) - A set of 8 standard values, provides backward compatibility with IPP
 
+Default Forwarding - best effor
+The DSCP marking for DF is 0.
+EF is used for traffic that requires low loss/latency/jitter.
+The DSCP marking for EF is 46.
 
+AF defines four traffic classes. All packets ina  class have the same priority.
+Within each class, there are three levels of drop precedence.
+  Higher drop precedence = more likely to drop the packet during congestion.
 
+![image](https://github.com/user-attachments/assets/69fa24c9-14e4-4ed2-a1f0-22c9621ca471)
 
+CS defines eight DSCP values for backward compatibility with IPP.
+The three bits that were added for DSCP are set to 0, and the originial IPP bits are used to make 8 values.
 
+RFC 4954 was developed with the help of Cisco to bring all of these values together and standardize their use.
+The RFC offers many specific recommendations, but here are a few key ones:
+Voice traffic: EF
+Interactive video: AF4x
+Streaming video: AF3x
+High priority data: AF2x
+Best effort: DF
 
+The trust boundary of a network defines where devices trust/don't trust the QoS markings of received messages.
+If the markings are trusted, the device will forward the message without changing the markings.
+IF the markings aren't trusted, the device will change the markings according to the configured policy.
+If an IP phone is connected to the switch port, it is recommeded to move the trust boundary to the IP phones.
+This is done via configuraiton on the switch port connected to the IP phone.
+If a user marks their PC's traffic with high priority, the marking will be changed (not trusted).
 
+An essential part of QoS is the use of multiple queues.
+  This is where classification plays a role. The device can match traffic based on various factors (for exmpale the DSCP marking in the IP header) and then place it in the appropriate queue.
+However, the device is only able to forward on efrom out of an interface at once, so a scheduler is used to decide which queue traffic is forwarded from next.
+  Prioritization allows the schedular to give certain queues more priority than others.
 
+A common scheduling method is weighted round-robin.
+  round-robin = packets are taken from each queue in order, cyclically
+  weighted = more data is taken from high priority queues each time the scheduler reaches that queue
 
+CBWFQ (Class-Based Weighted Fair Queuing) is a popular method of scheduling, using a weighted round-robin scheduler while guaranteeing each queue a certain percentage of the interface's 
+bandswidth during congestion.
 
+Round-robin scheduling is not ideal for voice/video traffic. Even if the voice/video traffic receives a guarenteed minimum amount of bandwidth, round-robin can add delay and jitter because
+even the high priority queues have to wait their turn in the scheduler. 
 
+LLQ (Low Larency Queuing) designates one (or more) queues as strict priority queues.
+  This means that if there is traffic in the queue, the scheduler will always take the next packet from that queue until it is empty.
+This is very effective for reducing the delay and jitter of voice/video traffic.
+However, it has the down side of potentially starving other queues if there is always traffic in the designated strict priority queue.
+  Policing can control the amount of traffic allowed in the strict priority queue so that it can't take all of the link's bandwidth.
 
-
-
-
-
+Traffic shaping and policing are both used to control the rate of traffic.
+Shaping buffers traffic in a queue if the traffic rate goes over the configured rate.
+Policing drops traffic if the traffic rate goes over the configured rate.
+  'Burst' traffic over the configured rate is allowed for a short period of time.
+  This accommodates data applications which typically are 'bursty' in nature. Instead of a constant stream of data, they send data in bursts.
+  The amount of burst traffic allowed is configurable.
+In both cases, classificiation can be used to allow for different rates for different kinds of traffic.
 
 
 
