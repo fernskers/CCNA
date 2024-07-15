@@ -2229,7 +2229,121 @@ Policing drops traffic if the traffic rate goes over the configured rate.
   The amount of burst traffic allowed is configurable.
 In both cases, classificiation can be used to allow for different rates for different kinds of traffic.
 
+The principles of the CIA Triad form the foundation of security:
+Confidentiality
+  Only authorized users should be able to access data.
+  Some information/data is public and can be access by anyone, some is secret and should only be accessed by specific people.
 
+Integrity
+  Data should not be tampered with by unauthorized users.
+  Data should be correct and authentic.
+
+Availability
+  The network/systems should be operational and accessible to authorized users.
+
+A vulnerability is any potential weakness that can compromise the CIA of a system/info.
+  A potential weakness isn't a problem on its own.
+
+An exploit is something that can potentially be used to exploit the vulnerability.
+  Something that can potentially be used an exploit isn't a problem on it's own.
+
+A threat is the potential of a vulnerability to be exploited.
+  A hacker exploiting a vulnerability in your system is a threat.
+
+A mitigation technique is something that cna protect against threats.
+  Should be implemented everywhere a vulnerability can be exploited: client devices, servers, switches, routers, firewalls, etc.
+
+DoS attacks threaten the availability of a system.
+One common DoS attack is the TCP SYN flood.
+  TCP three-way handshake: SYN | SYN-ACK | ACK
+  The attacker sends countless TCP SYN messages to the target.
+  The target sends a SYN-ACK message in response to each SYN it receives.
+  The attacker never replies with the final ACK of the TCP three-way handshake.
+  The incomplete connections fill up the target's TCP connection table.
+  The attacker continues sending SYN messages.
+  The target is no longer able to make legitimate TCP connections.
+
+DDoS attack, the attacker infects many target computers with malware and uses them all to inititate a denial-of-service attack, for example a TCP SYN flood attack.
+This group of infected computers is called a botnet.
+
+To spoof an address is to use a fake source address (IP or MAC address).
+Numerous attacks involve spoofing, it's not a single kind of attack.
+An example is a DHCP exhaustion attack.
+An attacker uses spoofed MAC addresses to flood DHCP Discover messages.
+The target server's DHCP pool becomes full, resulting in a denial-of-service to other devices.
+
+In a reflection attack, the attacker sends traffic to a reflector, and spoofs the source address of it spackets using the target's IP address.
+The reflector (ie. A DNS Server) sends the reply to the target's IP address.
+If the amount of traffic sent to the target is large enough, this can result in a denial-of-service.
+A reflection attack becomes an amplification attack when the amount of traffic sent by the attacker is small, but it triggers a large amount of traffic to be sent from the reflector to the target.
+
+In a man-in-the-middle attack, the attacker places himself between the source and destination to eavesdrop on communications, or to modify traffic before it reaches the destination.
+A common example is ARP spoofing, also known as ARP poisoning.
+A host sends an ARP request, asking for the MAC address of another device.
+The target of the request sends an ARP reply, information the requester of its MAC address.
+The attacker waits ands sends another ARP reply after the legitimate replier.
+If the attacker's ARP reply arrives last, it will overwrite the legitimate ARP entry in PC1's ARP table.
+In PC1's ARP table, the entry for 10.0.0.1 will have the attacker's MAC address.
+When PC1 tries to send traffic to SRC1, it iwll be forwarded to the attacker instead.
+The attacker can ispect the messages, and then forward them on to SRV1.
+The attacker can also modify the message sbefore forwarding them to SRV1.
+This compromises the Confidentiality and Integrity of communiactions between PC1 and SRV1.
+
+Reconnaissance attacks aren't attacks themselves, but they are used to gather information about a target which can be used for a future attack.
+This is often publicly available information.
+ie. nslookup to learn an ip address of a site
+
+Malware (malicious software) refers to a variety of harmful programs that can infect a computer.
+Viruses infect other software (a 'host program'). The virus spreads as the software is shared by users. Typically they corrupt or modify file on the target computer.
+Worms do not require a host program. They are standalone malware and they are able to spread on their own, without user interaction. The spread of worms can congest the network, but the
+'payload' of a worm can cause additional harm to target devices.
+Trojan Horses are harmful software that is disguised as legitimate software. They are spread through user interaction such as opening email attachments, or downloading a file from the Internet.
+
+Social engineering attacks target the most vulnerable part of any system - people!
+They involve psychological manipulation to make the target reveal confidential information or perform some action.
+Phishing typically involves fradulent emails that appear to come from a legitimate business (Amaon, bank, credit card company, etc.) and contain links to a fraudulent website that seems legitimate.
+  spear phishing is a more targeted form of phishing, ie. aimed at employees of a certain company.
+  whaling is phishing targeted at high-profile individuals, ie. a company president.
+Vishing (voice phishing) is phishing performed over the phone.
+Smishing (SMS phishing) is phishing using SMS text messages.
+Watering hole attacks compromise sites that the target victim frequently vists. If a malicious link is placed on a website the target trusts, theymight not hesitate to click it.
+Tailgating attacks involve entering restricted, secured areas by simply walking in behind an authorized person as they enter.
+
+Attakers can learn a user's passwords via multiple methods:
+  Guessing
+  Dictionary attack: A program runs through a 'dictionary' or list of common words/passwords to find the target's password
+  Brute force attack: A program tries every possible combination of letters, numbers, and special characters to find the target's password.
+  
+Multi-factor authentication involves providing more than just a username/password to prove your identity.
+Providing two of the following:
+  Something you know
+  Something you have
+  Something you are
+Digital certificates are another form of authentication used to prove the identity of the holder of the certificate.
+They are used for websites to verify that the website being accessed is legitmate.
+Entities that want a certificate to prove their identity send a CSR (Certificate Signing Request) to a CA (Certificate Authority), which will generate and sign the certificate.
+
+AAA stands for Authentication, Authorization, and Accounting.
+It is a framework for controlling and monitor users of a computer system (ie. a network)
+Authentication is the process of verifying a user's identity.
+Authorization is the process of granting the user the appropriate access and permissions.
+Accounting is the process of recording the user's activities on the system.
+Enterprises typically use a AAA server to provide AAA services.
+AAA servers usually support the following two AAA protocols:
+  RADIUS: an open standard protocol. Uses UDP ports 1812 and 1813.
+  TACACS+: A Cisco propriety protocol. Uses TCP port 49.
+
+User awareness programs are designed to make employees aware of potential security threats and risks. 
+User training programs are more formal than user awareness programs.
+Physical access control protects equipment and data from potential attackers by only allowing authorized users into protocted areas such as network closets or data cneter floors.
+
+
+
+
+
+
+
+  
 
 
 
