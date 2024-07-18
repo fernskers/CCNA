@@ -2337,6 +2337,108 @@ User awareness programs are designed to make employees aware of potential securi
 User training programs are more formal than user awareness programs.
 Physical access control protects equipment and data from potential attackers by only allowing authorized users into protocted areas such as network closets or data cneter floors.
 
+Port security is a security feature of Cisco switches.
+It allows you to control which source MAC addresses ar eallowed to enter the switchport.
+If an unauthorized source MAC address enters the port, an action will be taken.
+  The default action is to place the interface in an 'err-disabled' state.
+  If you don't configure it manually, the switch will allow the first source MAC address that enters the interface.
+You can change the maximum number of MAC addresses allowed.
+A combination of manually configured MAC addresses and dynamically learned addresses is possible.
+
+Port security allows network admins to control which devices are allowed to access the network.
+However, MAC address spoofing is a simple task.
+  It's easy to configure a device to send frames with a different source MAC address.
+Rather than manually specifying the MAC addresses allowed on each port, port security's ability to limit the number of MAC addresses allowed on an interface is more useful.
+
+Port security can be enabled on access ports or trunks ports, but they must be statically configured as access or trunk.
+*switchport port-security*
+*show port-security interface <int>*
+
+Use *shutdown*, then *no shutdown* commands to re-enable an interface.
+
+*show errdisable recover*
+Every 5 minutes (by default), all err-disabled interfaces will be re-enabled if err-disable recovery has been enabled for the cause of the interface's disablement.
+
+*errdisable recovery cause psecure-violation*
+*errdisable recovery interval 180*
+
+ErrDisable Recovery is useless if you don't remove the device that caused the interface to enter the err-disabled state!
+
+There are three different violation modes that determine what the switch will do if an unauthorized frame enters an interface configured with port security.
+Shutdown
+  Effectively shuts down the port by placing it in an err-disabled state.
+  Generates a Syslog and/or SNMP message when the interface is disabled.
+  The violation counter is set to 1 when the interface is disabled.
+Restrict
+  The switch discards traffic from unauthorized MAC addresses
+  The interface is NOT disabled
+  Generates a Syslog and/or SNMP message each time an unauthorized MAC is detected.
+  The violation counter is incremented by 1 for each unauthorized frame
+Protect
+  The switch discards traffic from unauthorized MAC addresses
+  The interface is NOT disabled
+  It does NOT generate Syslog/SNMP messages for unauthorized traffic
+  It does NOT increment the violation counter
+
+*switchport port-security violation restrict*
+
+*switchport port-security violation protect*
+
+By default secure MAC addresses will not 'age out'
+  Can be configure with *switchport port-security aging time <min>*
+The default aging type is Absolute
+  Absolute: After the secure MAC address is learned, the aging timer starts and the MAc is removed after the timer expires, even if the switch continures receiving frames from that source MAC address.
+  Inactivity: After the secure MAC address is learned, the aging timer starts but is reset every time a frame from that source MAC address is received on the interface.
+  Aging type is configured with *switchport port-security aging type {absolute | inactivity}
+Secure Static MAC aging (addresses configured with *switchport port-security mac-address <mac>* is disabled by default.
+  Can be enabled with *switchport port-security aging static*
+
+*show port-security*
+
+'Sticky' secure MAC address learning can be enabled with the following command: *switchport port-security mac-address sticky*
+When enabled, dynamically-learned secure MAC addresses will be added to the running config like this: *swtichport port-security mac-address sticky <mac>*
+The 'sticky' secure MAC addresses will never age out.
+  You need to save the running-config to the startup-config to make them truly permanent
+When you issue the *switchport port-security mac-address sticky* command, all current dynamically-learned secure MAC addresses will be converted to sticky secure MAC address.
+If you issue the "no switchport port-security mac-address sticky* command, all current sticky secure MAC addresses will be converted to regular dynamically-learned secure MAC addresses.
+
+Secure MAC addresses will be added to the MAC address talbe like any other MAC address.
+  Sticky and Static secure MAC addresses will have a type of STATIC
+  Dynamically-learned secure MAC addresses will have a type of DYNAMIC
+  You can view all secure MAC addresses with *show mac address-table secure*
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
