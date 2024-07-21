@@ -2407,39 +2407,112 @@ Secure MAC addresses will be added to the MAC address talbe like any other MAC a
   Dynamically-learned secure MAC addresses will have a type of DYNAMIC
   You can view all secure MAC addresses with *show mac address-table secure*
   
+DHCP snooping is a security feature of switches that is used to filter DHCP messages received on untrusted ports.
+DHCP snooping only filters DHCP messages. Non-DHCP messages aren't affected.
+All ports are untrusted by default.
+  Usually, uplink ports are configured as trusted ports, and downlink ports remain untrusted.
 
+An example of a DHCP-based attack is a DHCP starvation attack.
+An attacker uses spoofed MAC addresses to flood DHCP Discover messages.
+The target server's DHCP pool becomes fulll, resulting in a denial-of-service to other devices.
 
+Similar to ARP poisoning, DHCP Poisoning can be used to perform a Man-in-the-Middle attack.
+A spurious DHCP server replies to clients' DHCP Disocer messages and assigns them IP addresses, but makes the clients use the spurious server's IP as the default gateway.
+This will cause the client to send traffic to the attacker instead of the legitimate default gateway.
+The attacker can then examin/modify the traffic before forwarding it to the legitimate default gateway.
 
+When DHCP Snooping filters messages, it differentiates between DHCP Server messages and DHCP Client messages.
+Messages sent by DHCP Servers:
+  OFFER
+  ACK
+  NAK = Opposite of ACK, used to decline a client's REQUEST
+Messages sent by DHCP Clients:
+  DISCOVER
+  REQUEST
+  RELEASE = used to tell the server that the client no longer needs its IP address
+  DECLINE - Used to decline the IP address offered by a DHCP server
+  
+If a DHCP message is receieved on a trusted port, forward it as normal without inspection.
+If a DHCP message is received on an untrusted port, inspect it and act as follows:
+  If it is a DHCP Server message, discard it.
+  If it is a DHCP Client message, perform the following checks:
+  DISCOVER/REQUEST messages: Check if the frame's source MAC address and the DHCP message's CHADDR fields match. Match = forward, mismatch = discard
+  RELEASE/DECLINE messages: Check if the packet's source IP address and the receiving interface match the entry in the DHCP Snooping Binding Table. Match = forward, mismatch = discard.
+When a client successfully leases an IP address from a server, create a new entry in the DHCP Snooping Binding Table.
 
+*ip dhcp snooping*
+*ip dhcp snooping vlan <vlan-id>*
+*no ip dhcp snooping information option* (dont add option 82 to messages)
+*ip dhcp snooping trust* (configure interface as trusted port)
+*ip dhcp snooping limit rate <packets-per-second>*
+*show ip dhcp snooping binding*
 
+DHCP snooping can limit the rate at which DHCP messages are allowed to enter an interface.
+If the rate of DHCP messages crosses the configured limit, the interface is err-disabled.
+Like with Port Security, the interface can be manually re-enabled, or automatically re-enabled with errdisable recovery.
 
+*errdisabled recovery cause dhcp-rate-limit*
+*show errdisable recovery*
 
+Rate-limiting can be very useful to protect against DHCP exhaustion attacks.
 
+Option 82, also known as the 'DHCP relay agent information option' is one of many DHCP options.
+It provides additional information about which DHCP relay agent received the client's message, on which interface, in which VLAN< etc.
+DHCP relay agents can add Option 82 to messages they forward to the remote DHCP server.
+With DHCP snooping enabled, by default Cisco switches will add Option 82 to DHCP messages they receive from clients, even if the switch isn't acting as a DHCP relay agent.
+By default, Cisco switches will drop HDCP messages with Option 82 that are received on an untrusted port.
 
+ARP is used to learn the MAC address of another device with a known IP address.
+For example, a PC will use ARP to learn the MAC address of its default gateway to communicate with external networks.
+Typically it is a two message exchange: request and reply
 
+A Gratuitious ARP message is an ARP reply that is sent without receiving an ARP request.
+It is sent to the broadcast MAC address.
+It allows other devices to learn the MAC address of the sending device without having to send ARP requests.
+Some devices automatically send GARP messages when an interface is enabled, IP address is changed, MAC address is changed, etc.
 
+Dynamic ARP inspection
+DAI is a security feature of switches that is used to filter ARP messages received on untrusted ports.
+DAI only filters ARP messages. Non-ARP messages aren't affected.
+All ports are untrusted by default.
+  Typically, all ports connected to other network devices should be configured as trusted, while interfaces connected to end hosts should remain untrusted.
 
+Similar to DHCP poisoning, ARP poisoning involves an attacker mannipulating target's ARP tables so traffic is sent to the attacker.
+To do this, the attacker can send gratuitous ARP messages using another device's IP address.
+Other devices in the network will receive the GARP and update their ARP tables, causing them to send traffic to the attacker instead of the legitimate destination.
 
+DAI inspects the sender MAC and sender IP fields of ARP messages receivved on untrusted ports and checks that there is a matching entry in the DHCP snooping binding table.
+  If there is a matching entry, the ARP message is forwarded normally
+  If there isn't a matching entry, the ARP message is discarded.
+DAI doesn't inspect messages received on trusted ports. They are forwarded as normal.
+ARP ACLs can be manually configured to map IP addresses/MAC addresses for DAI to check
+  Useful for hosts that don't use DHCP.
+DAI can be configured to perform more in-depth checks also, but these are optional.
+Like DHCP snooping, DAI also supports rate-limiting to prevent attackers from overwhelming the switch with ARP messages.
+  DHCP snooping and DAI both require work form the switch's CPU
+  Even if the attacker's messages are blocked, they can overload the swtich CPU with ARP messages.
 
+*ip arp inspection vlan <num>*
+*ip arp inspection trust* (on trusted interfaces)
+*show ip arp inspection interfaces*
+*show ip arp inspection*
 
+DAI rate limiting is enabled on untrusted ports by default with a rate of 15 packets per second. It is disabled on trusted ports by default.
+DHCP snooping rate limiting is configured like this: *x packtes per second*, the DAI burst interval allows you to configure rate limiting like this: *x packets per y seconds*
 
+*ip arp inspection limit rate <packets> burst interval <seconds>* (default is 1)
 
+If ARP messages are received faster than the specified rate, the interface will be err-disabled.
 
+*ip arp inspection validate dst-mac* (validates dest. MAC in eth header vs. MAC in ARP body)
+*ip arp inspection validate ip* (validates against invalid and unexpcted IP addresses)
+*ip arp inspection validate src-mac* (validates source MAC in eth header vs. MAC in ARP body)
 
+You must enter all of the validation checks you want in a single command.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+*arp access-list <name>*
+*permit ip host <ip-add> mac host <mac-add>*
+*ip are inspection filter <arp-acl-name> vlan <num>*
 
 
 
