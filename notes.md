@@ -2514,8 +2514,30 @@ You must enter all of the validation checks you want in a single command.
 *permit ip host <ip-add> mac host <mac-add>*
 *ip are inspection filter <arp-acl-name> vlan <num>*
 
+Star: When several devices all connect to one central device we can draw them in a 'star' shape like below, so this is often called a 'star topology'.
+Full mesh: When each device is connected to each other device.
+Partial mesh: When some devices are connected to each other, but not all.
 
+The two-tier LAN design consists of two hierarchical layers:
+ - Access Layer
+ - Distribution Layer
+Also called a 'Collapsed Core' design because it omits a layer that is found in the Three Tier design: the Core Layer.
+Access Layer:
+- the layer that end hosts connect to (PCs, printers, cameras, etc.)
+- typically Access Layer Switches have lots of ports for end hosts to connect to
+- QoS marking is typically done here
+- Security services like port security, DAI, etc are typically performed here
+- switchports might be PoE-enabled for wireless APs, IP phones, etc.
 
+Distribution Layer:
+- aggregates connections from the Access Layer Switches
+- typically is the border between Layer 2 and Layer 3
+
+* In a collapsed core design, the Distribution Layer is sometimes called the Core-Distribution Layer.
+* Connections between Distribution Switches are Layer 3. Routing information can be shared via OSPF, for example.
+
+In large LAN networks with many Distribution Layer switches, the number of connections required between Distribution Layer switches grows rapidly.
+To help scale large LAN networks, you can add a Core Layer. *Cisco recommends adding a Core Layer if there are more than three Distribution Layers in a single location.
 
 
   
