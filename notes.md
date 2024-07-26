@@ -2539,8 +2539,182 @@ Distribution Layer:
 In large LAN networks with many Distribution Layer switches, the number of connections required between Distribution Layer switches grows rapidly.
 To help scale large LAN networks, you can add a Core Layer. *Cisco recommends adding a Core Layer if there are more than three Distribution Layers in a single location.
 
+The three-tier LAN design consists of three hierarchical layers:
+- Access Layer
+- Distribution Layer
+- Core Layer
 
+Core Layer: Connects Distribution Layers together in large LAN networks
+- Connects Distribution Layers together in large LAN networks
+- The focus is speed ('fast transport')
+- CPU-intensive operations such as security, QoS marking/classification, etc. should be avoided at the Layer
+- Connections are all Layer 3. No spanning-tree!
+- Should maintain connectvity throughout the LAN even if devices fail
   
+Spine-Leaf Architecture
+Data centers are dedicated spaces/buildings used to store computer systems such as servers and network devices.
+Traditional data center designs used a three-tier architecture (Access-Distribution-Core) like we just covered.
+This worked well when most traffic in the data center was North-South.
+With the precedence of virtual servers, applications are often deployed in a distributed manner (across multiple physical servers), which increases
+amount of East-West traffic in the data center.
+The traditional three-tier architecture led to bottlenecks in bandwidth as well as variability in the server-to-server latency depending on the path the traffic takes.
+To solve this, Spine-Leaf architecture (also called Clos architecture) has become prominent in data centers.
+
+There are some rules about Spine-Leaf architecture:
+- Every Leaf switch is connected to every Spine switch.
+- Every Spine switch is connected to every Leaf switch.
+- Leaf switches do no connect to other Leaf switches.
+- Spine switches do not connect to other Spine swtiches.
+- End hosts (servers etc.) only conenct to Leaf switches.
+
+The path taken by traffic is randomly chosen to balance the traffic load among the Spine swithces.
+Each server is separated by the same number of 'hops' (except those connected to the same Leaf), providing consistent latency for East-West traffic.
+
+SOHO Networks
+Small Office/Home Office (SOHO) refers to the office of a small company, or a small home office with few devices.
+ - Doesn't have to be an actual home 'office', if your home has a network connected to the Internet it is considered a SOHO network.
+ - SOHO networks don't have complex needs, so all networking functions are typically provided by a single device, often called a 'home router' or 'wireless router'.
+This one device can serve as a:
+ - Router
+ - Switch
+ - Firewall
+ - Wireless Access Point
+ - Modem
+
+WAN Architectures
+WAN stands for Wide Area Network.
+A WAN is a network that extends over a large geographic area.
+WANs are used to connect geographically separete LANs.
+Although the Internet itself can be considered a WAN, the term WAN is typically used to refer to an enterprise's private connections that connect their offices, data centers, and other sites together.
+Over public/shared networks like the Internet, VPNs (Virtual Private Networks) can be used to create private WAN connections.
+There have bene many different WAN technologies over the years. Depending on the location, some will be available and some will not be.
+Technologies which are considered 'legacy' (old) in one country might still be used in other countries.
+
+A leased line is a dedicated physical link, typically connecting two sites.
+Leased lines use serial connectinos (PPP or HDLC encapsulation)
+There are various standards that provide different speeds, and different standards are available in different countries.
+Due to the higher cost, higher installation lead time, and slower speeds of leased lines, Ethernet WAN technologies are becoming more popular.
+
+MPLS stands for 'Multi Protocol Label Switching'.
+Similar to the Internet, service providers' MPLS networks are shared infrastructure because many customer enterprises connect to and share the same infrastructure to make WAN connections.
+However, the label switching in the name of MPLS allows VPNs to be created over the MPLS infrasture through the use of labels.
+Some important terms: 
+CE router = Customer Edge router
+PE router = Provider Edge router
+P router = Provider core router
+When the PE routers receive frames form the CE routers, they add a label to the frame.
+These labels are used to make forwarding devisions within the servie provider network, not the destination IP.
+
+The CE routers do no use MPLS, it is only used by the PE/P routers.
+When using a Layer 3 MPLS VPN, the CE and PE routers peer using OSPF, for example, to share routing information.
+When using a Layer 2 MPLS VPN, the CE and PE routers do not form peerings.
+The serviec provider network is entirely transparent to the CE routers.
+In effect, it is like the two CE routers are directly connected.
+  Their WAN interfaces will be in the same subnet.
+If a routing protocol is used, the two CE routers will peer directly with each other.
+
+Digital Subscriber Line (DSL)
+DSL provides Internet connectivity to customers over phone lines, and can share the same phone line that is already installed in most homes.
+A DSL modem (modulator-demodulator) is required to convert data into a format suitable to be sent over the phone lines.
+ - The modem might be a separate device, or it might be incorporated in to the 'home router'.
+
+Cable Internet
+provides Internet access via the same CATV (Cable Television) lines used for TV service.
+Like DSL, a cable modem is required to convert data into a format suitable to be sent over the CATV cables.
+  Like a DSL modem, this can be a separate device or built into the home router.
+
+1 connection to 1 ISP = Single Homed
+2 connectinos to 1 ISP = Dual Homed
+1 connection to each of 2 ISPs = Multihomes
+2 connections to each of 2 ISPs = Dual Multihomed
+
+Private WAN services such as leased lines and MPLS provide security because each customer's traffic is separated by using dedicated physical conections (lease line) or by MPLS tags.
+When using the Internet as a WAN to connect sites together, there is no built-in security by default.
+To provide secure communications over the Internet, VPNs (Virtual Private Networks) are used.
+We will cover two kinds of Internet VPNs:
+1) Site-to-Site VPNs using IPsec
+2) Remote-access VPNs using TLS
+
+Site-to-Site VPNs (IPSec)
+A 'site-to-site' VPN is a VPN between two devices and is used to connect two sites together over the Internet.
+A VPN 'tunnel' is created between the two devices by encapsulating the original IP packet with a VPN header and a new IP header.
+  - When using IP sec, the original packet is encryptedbefore being encapsulated with the new header.
+
+Summarize of process:
+1) The sending device combines the original packet and session key (encryption key) and runs them through an encryption formula.
+2) The sending device encapsulates the encrypted packet with a VPN header and a new IP header.
+3) The sending device sends the new packet to the device on the other side of the tunnel.
+4) The receiving device decrypts the data to get the original packet, and then forwards the original packet to its destination.
+
+In a 'site-to-site' VPN, a tunnel is formed only between two tunnel endpoints (for example, the two routers connected to the Internet).
+All other devices in each site don't need to create a VPN for themselves. They can send unencrypted data to their site's router, which will encrypt it and forward it in the tunnel as described above.
+
+There are some limitations to standard IPsec:
+1) IPsec doesn't support broadcast and multicast traffic, only unicast. This means that routing protocols such as OSPF can't be used over the tunnels, because they rely on multicast traffic.
+   This can be solved with 'GRE over IPsec'
+2) Configuring a full lmesh of tunnels between many sites is a labor-intensive task.
+  This can be solved with Cisco's DMVPN
+
+GRE (Generic Routing Encapsulation) creates tunnels like IPsec, however it does not encyrpt the original packet, so it is not secure.
+However, it has the advantage of being able to encapulsate a wide variety of Layer 3 protocols as well as broadcast and multicast messages.
+To get the flexibility of GRE with the security of IPsec, 'GRE over IPsec' can be used.
+The original packet will be encapsulated by a GRE header and a new IP header, and then the GRE packet will be encrypted and encapsulated within an IPsec VPN header and new IP header.
+
+DMVPN (Dynamic Multipoint VPN) is a Cisco-developed solution that allows routers to dynamically create a full mesh of IPsec tunnels without having to manually configure every singel tunnel.
+DMVPN provides the configuration simplicity of hub-and-spoke and the efficiency of direct spoke-to-spoke communication.
+
+Whereas site-to-site VPNs are used to make a point-to-point connection between two sites over the Internet, remote-access VPNs are used to allow end devices (PCs, mobile phones) to access the 
+company's internal resources securely over the Internet.
+Remote-access VPNs typically use TLS (Transport Layer Security).
+ - TLS is also what provides security for HTTPS (HTTP Secure)
+ - TLS was formerly known as SSL (Secure Sockets Layer) and developed by Netscape, but it was renamed to TLS when it was standardized by the IETF.
+VPN client software (for example Cisco AnyConnect) is installed on end devices
+These end devices then form secure tennels to one of the company's routers/firewalls acting as a TLS sever.
+This allows the end users to securely access resources on the company's internal network without being directly connected to the company network.
+
+Site-to-Site VPNs typically use IPsec.
+Remote-Access VPNs typically use TLS.
+
+Site-to-Site VPNs provide service to many devices within the sites they are connecting.
+Remote-Access VPNs provide service to the one end device the VPN client software is installed on.
+
+Site-to-Site VPNs are typically used to permanently connect two sites over the Internet.
+Remote-Access VPNs are typically used to provide on-demand access for end devices that want to securely access company resources hwile connected to a entwork which is not secure.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
