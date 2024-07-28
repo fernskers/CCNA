@@ -2681,17 +2681,122 @@ Remote-Access VPNs provide service to the one end device the VPN client software
 Site-to-Site VPNs are typically used to permanently connect two sites over the Internet.
 Remote-Access VPNs are typically used to provide on-demand access for end devices that want to securely access company resources hwile connected to a entwork which is not secure.
 
+Before virtualization, there was a one-to-one relationship between a physical server and an ioiperating system.
+In that operating syste, apps providing services such as a web server, email server, etc. would run.
+One physical server would be used for the web server, one for the email server, one for the database server, etc.
+This is inefficient for multiple reasons:
+  - Each physical server is expensive and takes up space, power, etc.
+  - The resources on each physical server (CPU, RAM, Storage, NIC) are typically under-used.
 
+Virtualization allows us to break the one-to-one relationship of hardware to OS, allowing multiple OS's to run on a single physical server.
+Each instance is called a VM (Virtual Machine).
+A hypervisor is used to manager and allocate the hardware resources (CPU, RAM, etc.) to each VM.
+Another name for a hypervisor is VMM (Virtual Machine Monitor).
+The type of hypervisor which runs directly on top of th ehardware is called a Type 1 hypervisor
+ - Examples include VMware ESXi, Microsoft Hyper-V, etc.
+Type 1 hypervisors are also called bare-metal hypervisors because they run directly on the hardware.
+This is the type of hypervisor used in data center environments.
 
+Type 2 Hypervisors run as a program on an operating system like a regular computer program.
+ - Exmaples include VMware Workstation, Oracle VirtualBox, etc.
+The OS running directly on the hardware is called the Host OS, and the OS running in a VM is called a Guest OS.
+Another name for a Type 2 hypervisor is hosted hypervisor.
+Although Type 2 hypervisors are rarely used in data canter environments, they are common on personal-use devices.
 
+VMs are connected to each other and the external network via a virtual switch running on the hypervisor.
+Just like a regular physical switch, the vSwitch's interfaces can operate as access or trunk ports and use VLANs to separate the VMs at Layer 2.
+Interfaces on the vSwitch connect to the phsycial NIC (or NICs) of the server to communicate with the external network.
 
+Traditional IT infrastructure deployments were some combination of the following:
 
+On-premises
+ - All server, network devices, and other infrastructure are located on company property.
+ - All equipment is purchased and owned by the company using it.
+ - The company is responsible for the necessary space, power, and cooling.
 
+Colocation
+ - Data centers that rent out space for customers to put their infrastructure.
+ - The data center provides the space, electricity, and cooling.
+ - The servers, network decices, etc. are still the responsibility of the end customer, although they are not located on the customer's premises.
 
+The American NIST (National Institue of Standards and Technology) defined cloud computing in SP (Special Publications) 800-145.
 
+The five essential characteristics of cloud computing are:
+On-demand self-service
+Broad network access
+Resource pooling
+Rapid elasticity
+Measured service
 
+The Three Service Models of Cloud
+Software as a Service (SaaS)
+Platform as a Service (PaaS)
+Infrastructure as a Service (IaaS)
 
+![image](https://github.com/user-attachments/assets/59ca7911-33cd-4b3a-b901-d669aadd79d2)
 
+The Four Deployment Models of Cloud:
+Private
+Community
+Public
+Hybrid
+
+Benefits of Cloud Computing
+Cost 
+Glocal Scale
+Speed/Agility
+Productivity
+Reliability
+
+Connecting to Cloud Resources:
+Private WAN Service Provider
+Internet
+IPsec VPN Tunnel
+
+Containers are software packages that cointain an App and all dependenciesfor the contained App to run.
+ - Multiple Apps can be run in a single container, but this is not how containers are usually used.
+Containers run on a Container Engine (e.g. Docker Engine)
+ - The container engine is run on a host OS
+Containers are lightweight and include only the dependencies required to run the sepcific App.
+A container Orchestrator is a software platform for automating the deployment, managment, scaling etc. of containers. (e.g. Kubernetes)
+In small numbers manual operation is possible, but large-scale systems can require thousands of containers.
+Microservice Architecture is an approach to software architecture that divides a larger solution into smaller parts (microservices).
+ - Those microservices all run in containers that can be orchestrated by Kubernetes.
+
+VMs vs. Containers.
+
+VMs take minutes to boot up
+Containers can boot up in milliseconds
+
+VMs take up more disk space
+Containers take up very little disk space
+
+VMs use more CPU/RAM resources
+Containers use much fewer resources
+
+VMs are portable and can move between physical systems running the same hypervisor.
+Containers are more portable; they are smaller, faster to boot up, and Docker containers can be run on nearly any container service.
+
+VMs are more isolated because each VM runs its own OS.
+Containers are less isolated because they all run on the same OS; if the OS crashes, all containers running on it are effected.
+
+Virtual Routing & Forwarding is used to divide a single router into multiple virtual routers.
+  - Similar to how VLANs are used to divide a single switch into multiple virtual switches.
+It does this by allowing a router to build multiple separate routing tables.
+ - Interfaces (Layer 3 only) & routes are configured to be in a spcific VRF.
+ - Router interfaces, SVIs &routed ports on multilayer switches can be configured in a VRF.
+Traffic in one VRF cannot be forwarded out of an interface in another VRF.
+ - As an exception, VRF Leaking can be configured to allow traffic to pass between VRF's.
+VRF is commonly used to facilitate MPLS.
+ - The kind of VRF we are talking about is VRF-lite (VRF without MPLS)
+VRF is commonly used by service providers to allow one device to carry traffic from multiple customers.
+ - Each customer's traffic is isolated from the others.
+ - Customer IP addresses can overlap without issues.
+
+Create VRFs:
+*ip vrf <name>*
+Assign interfaces to VRFs:
+*ip vrf forwarding <name>*
 
 
 
