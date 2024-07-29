@@ -2798,31 +2798,176 @@ Create VRFs:
 Assign interfaces to VRFs:
 *ip vrf forwarding <name>*
 
+The standards we use for wireless LANs are defined in IEEE 802.11.
+The term Wi-Fi is a trademark of the Wi-Fi Alliance, not directly connected to the IEEE.
+The Wi-Fi Alliance tests and certifies equipment for 802.11 standards compliance interoperability with other devices.
 
+Wireless networks have some issues that we need to deal with.
+1) All devices within range receive all frames, like devices connected to an Ethernet hub.
+   - Privacy of data within the LAN is a greater concern.
+   - CSMA/CA (Carrier Sense Multiple Access with Collision Avoidance) is used to facilitate half-duplex communications.
 
+CSMA/CD is used in wired networks to detect and recover from collisions.
+CSMA/CA is used in wireless networks to avoid collisions.
+When using CSMA/CA, a device will wait for other devices to stop transmitting before it transmits data itself.
 
+2) Wireless communications are regulated by various international and national bodies.
+3) Wireless signal coverage area must be considered.
+ - Signal range
+ - Signal absoption, reflection, refraction, diffraction, and scattering.
 
+Signal Absorption happens when a wireless signal passes through a material and is converted into heat, weakening the original signal.
+Signal Reflection happens when a signal bounces off of a material, for example metal.
+Signal Refraction happens when a wave is bent when entering a medium where the signal travels.
+Signal Diffraction happens when a wave encounters an obstable and travels around it.
+Signal Scattering happens when a matrial causes a signal to scatter in all directions.
 
+4) Other devices using the same channels can cause interference.
 
+To send wireless signals, the sender applies an alternating current to an antenna.
+ - This creates electromagnetic fiels which propagate out as waves.
+Electromagnetic waves can be measured in multiple ways for example amplitude and frequency.
+Amplitude is the maximum strength of the elctric and magnetic fields.
+Frequency measures the up/down cycles per a given unit of time.
+The most common measurement of frequency is hertz.
+Hz (Hertz) = cycles per second.
+Period = amount of time of one cycle.
+Visible frequency range is about 400 THz to 790 THz.
+The radio frequency range is from 30 Hz to 300 GHz and is used for many purposes.
 
+Wi_fi uses two main bands (frequency ranges)
 
+2.4 GHz band
+ - actual range is 2.400 GHz to 2.4835 GHz
+5 GHz band
+ - actual range is from 5.150 Ghz to 5.825 GHz
 
+The 2.4 GHz band typicallly provides further reach in open space and better penetration of obstacles such as walls.
+ - However, more devices tend to use the 2.4 GHz band so interference can be a bigger problem compared to the 5 GHz band.
+Wi-Fi 6 (802.11ax) has expended the spectrum range to include a band in the 6 GHz range.
 
+Each band is divided up into multiple 'channels'.
+  - Devices are configured to transmit and receive traffic on one (or more of these channels).
 
+In a small wireless LAN with only a single AP, you can use any channel.
+However, in larger WLANs with multiple APs, it's important that adjacent APs don't use overlapping channels. This helps avoid interference.
+In the 2.4 GHz band, it is recommended to use channels 1, 6, and 11.
+The 5 GHz band consists of non-overlapping bands.
+Using channels 1, 6, and 11, you can place APs in a 'honeycomb' pattern to provide complete coverage of an area without interference between channels.
 
+![image](https://github.com/user-attachments/assets/68359004-e9d0-4694-a114-fc4e005845b5)
 
+802.11 defines different kinds of service sets which are groups of wireless network devices.
+There are three main types:
+ - Independent
+ - Infrastructure
+ - Mesh
+All devices in a service set share the same SSID (service set identifier).
+The SSID is a human-readable name identifies the service set.
+The SSID does not have to be unique.
 
+An IBSS (Independent Basic Service Set) is a wireless network in whihc two or more wireless devices connect directly without using an AP (Access Point)
+Also called an ad hoc network.
+Can be used for file transfer.
+Not scalable beyond a few devices.
 
+A BSS (Basic Service Set) is a kind of Infrastructure Service Set in which clients connect to each other via an AP (Access Point), but not directly to each other.
+A BSSID (Basic Service Set ID) is used to uniquely identify the AP.
+  - Other APs can use the same SSID, but no the same BSSID
+  - The BSSID is the MAC address of the AP's radio
+Wireless devices request to associate with the BSS.
+Wireless devices that have associated with the BSS are called 'clients' or 'stations'.
+*The area around an AP where its signal is usable is called a BSA (Basic Service Area).
+*Clients must communicate via the AP, not directly with each other.
 
+To create larger wireless LANs beyond the range of a single AP, we use an ESS (Extended Service Set).
+APs with their own BSSs are connected by a wired network.
+ - Each BSS uses the same SSID
+ - Each BSS has a unique BSSID
+ - Each BSS uses a different channel to avoid interference.
+Clients can pass between APs without having to reconnect, providing a seamless Wi-Fi experience when moving between APs.
+ - This is called roaming.
+The BSAs should overlap about 10-15%.
 
+An MBSS (Mesh Basic Service Set) can be used in situations where it's difficult to run an Ethernet connection to every AP.
+Mesh APs use two radios: one to provide a BSS to wireless clients, and one to form a 'backhaul network' which is used to bridge traffic from AP to AP.
+At least one AP is connected to the wired network, and it is called the RAP (Root Access Point).
+The other APs are called MAPs (Mesh Access Points).
+A protocol is used to determine the best path through the mesh (similar to howo dynamic routing protocols are used to determine the best path to a destination).
 
+Most wireless networks aren't standalone networks.
+ - Rather they are a way for wireless clients to connect to the wired network infrastructure.
+In 802.11, the upstream wired network is called the DS (Distribution System).
+Each wireless BSS or ESS is mapped to a VLAN in the wired network.
 
+It's possible for an AP to provide multiple wireless LANs, each with a unique SSID.
+Each WLAN is mapped to separate VLAN and connected to the wired network via a trunk.
+EAch WLAN uses a unique BSSID, usually by incrementing the last digit of the BSSID by one.
 
+APs can operate in additional modes.
+An AP in repeater mode can be used to extend the range of a BSS.
+The repeater will simply retransmit any signal it receives from the AP.
+ - A repeater with a single radio must operate on the same channel as the AP, but this can drastically reduce the overall throughput on the channel.
+ - A repeater with two radios can recieve on one channle, and then retransmit on another channel.
+A workgroup bridge (WGB) operates as a wireless client of another AP, and can be used to connect wired devices to the wireless network.
+An outdoor bridge can be used to connect networks over long distances without a physical cable connecting them.
+The APs will use specialized antennas that focus most of the signal power in one direction, which allows the wireless connection to be made over longer distances than normally possible.
+The connection cna be point-to-point as in the diagram below, or point-to-multipoint in which multiple sites connect to one central site.
 
+Access Points bridge traffic between wireless stations and other devices.
+For a station to send traffic through the AP, it must be associated with the AP.
+There are three 802.11 connection states:
+  - Not authenticated, not associated.
+  - Authenticated, not associated.
+  - Authenticated, and associated.
+The staion must be authenticated and associated with the AP to send traffic through it.
 
+There are two ways a station can scan for a BSS:
+Active scanning: The station sends probe requests and listens for a probe response from an AP.
+Passive scanning: The station listens for beacon messages from an AP. Beacon messages are sent periodically by APs to advertise the BSS.
 
+There are three 802.11 message types:
+Management: used to manage the BSS
+- Beacon
+- Probe request, probe response
+- Authentication
+- Association request, associate response
 
+Control: Used to control access to the medium (radio frequency). Asssists with delivery of management and data frames.
+- RTS (Request to Send)
+- CTS (Clear to Send)
+- ACK
 
+Data: Used to send actual data packets.
+
+There are three main wireless AP deployment methods:
+
+Autonomous APs are self-contained systems that don't rely on a WLC.
+Autonomous APs are configured individually.
+ - Can be configured by console cable (CLI), telnet/SSH (CLI), or HTTP/HTTPS web connection (GUI).
+ - An IP address for remote management should be configured.
+ - The RF parameters must be manually configured (transmit power, channel, etc.)
+ - Security policies are handled individually be each AP.
+ - QoS rules etc. are configured individually on each AP.
+There is no central monitoring or management of APs.
+
+Autonomous APs connect to the wired network with a trunk link.
+Data traffic from wireless clients have a very direct path to the wired network or to other wireless clients associated with the same AP.
+Each VLAN has to stretch across the entire network. This is considered bad practice.
+ - Large broadcast domains
+ - Spanning tree will disable links
+ - Adding/deleting VLANs is very labor-intensive
+Autonomous APs can be used in small networks, but they are not viable in medium to large networks.
+ - Large networks can have thousands of APs
+Autonomous APs can also function in the modes covered in the previous video: Repeater, Outdoor Bridge, Workgroup Bridge.
+
+The functions of an AP can be split between the AP and a Wireless LAN Controller (WLC)
+Lightweight APs handle 'real-time' operations like transmitting/receiving RF traffic, encryption/decryption of traffic, sending out beacons/probes, etc.
+Other functions are carried out by a WLC, for example RF management, security QoS management, client authentication, client association/roaming management, etc.
+This is called split-MAC architecture.
+The WLC is also use to centrally configure the lightweight APs.
+The WLC can be located in the same subnet/VLAN as the lightweight APs it manages, or in a different subnet/VLAN.
+The WLC and the lightweight APs authenticate each other using digital certificates installed on each device (X.509 standard certificaties).
 
 
 
