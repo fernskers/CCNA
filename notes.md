@@ -2968,6 +2968,84 @@ This is called split-MAC architecture.
 The WLC is also use to centrally configure the lightweight APs.
 The WLC can be located in the same subnet/VLAN as the lightweight APs it manages, or in a different subnet/VLAN.
 The WLC and the lightweight APs authenticate each other using digital certificates installed on each device (X.509 standard certificaties).
+  This ensures that only authorized APs can join the network.
+
+The WLC and lightweight APs use a protocol called CAPWAP (Control and Provisioning Of Wireless Access Points) to communicate.
+  - Based on an older protocol called LWAPP (Lightweight Access Point Protocol)
+Two tunnels are created between each AP and the WLC:
+ - Control tunnel (UDP port 5246). This tunnel is used to configure the APs, and control/manage the operations. All traffic in this tunnel is encrypted by default.
+ - Data tunnel (UDP port 5247). All traffic from wireless clients is sent through this tunnel to the WLC. It does not go directly to the wired network. Traffic
+   in this tunnel is not encrypted by default, but you can configure it to be encrypted with DTLS (Datagram Transport Layer Security)
+Because all traffic from wireless clients is tunneled to the WLC with CAPWAP, APs connect to switch access ports, not trunk ports.
+   
+There are some key benefits to split-MAC architecture, here are a few:
+ - Scalability: With a WLC (or multiple in very large networks) it's much simpler to build and support a network with thousands of APs.
+ - Dynamic channel assignment: The WLC can automatically select which channel each AP should use.
+ - Transmit power optimization: The WLC can automatically set the appropriate transmit power for each AP.
+ - Self-healing wireless coverage: When an AP stops functioning, the WLC can increase the transmit power of nearby APs to avoid coverage holes.
+ - Seamless roaming: Clients can roam between APs with no noticeable delay.
+ - Client load balancing: If a client is in range of two APs, the WLC can associate the client with the least-used AP, to balance the load among APs.
+ - Security/QoS management: Central management of security and QoS policies ensures consistency across the network.
+
+Lightweight APs can be consifured to operate in various modes:
+ - Local: This is the default mode where the AP offers a BSS (more multiple BSSs) for clients to associate with.
+ - FlexConnect: Like a lightweight AP in Local mode, it offers one or more BSSs for clients to associate with. However, FlexConnect allows the AP to locally switch traffic between the wired and
+   wireless networks if the tunnels to the WLC go down.
+ - Sniffer: The AP does not offer a BSS for clients. It is dedicated to capturing 802.11 frames and sending them to a device running software such as Wireshark.
+ - Monitor: The AP does not offer a BSS for clients. It is dedicated to receiving 802.11 frames to detect rogue devices. If a client is found to be a rougue device, an AP can send de-authentication messages
+   to disassociate the rougue device from the AP.
+ - Rogue Detector: The AP does not even use its radio. It listens to traffic on the wired network only, but it receives a list of suspected rogue clients and AP MAC addresses from the WLC. By listening
+   to ARP messages on the wired network and correlating it with the information it receives from the WLC, it can detect rogue devices.
+ - SE-Connect (Spectrum Expert Connect): The AP does not offer a BSS for clients. It is dedicated to RF spectrum analysis on all channels. It can send information to software such as Cisco Spectrum Expert
+   on a PC to collect and analyze the data.
+ - Bridge/Mesh: Like the autonomous AP's Outdoor Bridge mode, the lightweight AP can be a dedicated bridge between sites, for example over long distances. A mesh can be made between the access points.
+ - Flex plus Bridge: Adds FlexConnect functionality to the Bridge/Mesh mode. Allows wireless access points to locally forward traffic even if connectivity to the WLC is lost.
+   
+Cloud-Based AP architecture is in between autonomous AP and split-MAC architecture.
+ - Autonomous APs that are centrally managed in the cloud.
+Cisco Meraki is a popular cloud-based Wi-Fi solution.
+The Meraki dashboard can be used to configure APs, monitor the network, generate performance reports, etc.
+ - Meraki also tells each AP which channel to use, what transmit power, etc.
+However, data traffic is not sent to the cloud. It is sent directly to the wired network like when using autonomous APs.
+ - Only management/control traffic is sent to the cloud.
+
+In a split-MAC architecture, there are four main WLC deployment models:
+Unified: The WLC is a hardware applicance in a central location of the network.
+Cloud-based: The WLC is a VM running on a server, usually in a private cloud in a data center. This is not the same as the cloud-based AP architecture discussed previously.
+Embedded: The WLC is integrated within a switch.
+Mobility Express: The WLC is integrated within an AP.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
