@@ -3144,14 +3144,32 @@ WPA 3 was released in 2018 and includes the following protocols:L
  - SEA (Simultaneous Authentication of Equals) protects the four-way handshake when using personal mode authentication.
  - Forward secrecy prevents data from being decrypted after it has been transmitted over the air. So, an attacker can't capture wireless frames and then try to decrypt them later.
 
+WLCs only support static LAG, no PAgP or LACP.
 
+*chennel-group 1 mode on*
 
+Wireless Configuration
 
+![image](https://github.com/user-attachments/assets/13c8497c-de54-408e-87e5-38ad52ecbe3a)
 
+![image](https://github.com/user-attachments/assets/26d35678-17bd-41c1-b800-cffb78ff2e84)
 
+WLC ports are the physical ports that cables connect to.
+WLC interfaces are the logical interfaces within the WLC (ie. SVIs on a switch)
+WLCs have a few different kinds of ports:
+ - Service port: A dedicated management port. Used for out-of-band management. Must connect to a switch access port because it only supports one VLNA. This port can be used to connect to the device while
+   it is booting, perform system recovery, etc.
+ - Distribution system port: These are the standard network ports that connect to the 'distribution system' (wired network) and are used for data traffic. These ports usually connect to swtich trunk ports, and if
+   multiple distribution ports are used they can form a LAG.
+ - Console port: This is a standard console port, either RJ45 or USB.
+ - Redundacy port: This port is used to connect to another WLC to form a high availability (HA) pair.
 
-
-
+WLCs have a few different kinds of interfaces:
+ - Management interface: Used for management traffic such as Telnet, SSH, HTTP, HTTPS, RADIUS authentication, NTP, Syslog, etc. CAPWAP tunnels are also formed to/from the WLC's management interface.
+ - Redundancy managament interface: When two WLCs are connected by their redundancy ports, one WLC is 'active' and the other is 'standby'. This interface can be used to connect to and manage the 'standby' WLC.
+ - Virtual interface: This interface is used when communicating with wireless clients to relay DHCP requests, perform client web authentication, etc.
+ - Service port interface: If the service port is used, this interface is bound to it and used for out-of-band management.
+ - Dynamic interface: These are the interfaces used to map a WLAN to a VLAN. For example, traffic from the 'Interfnal' WLAN will be sent to the wired network from the WLC's 'Internal' dynamic interface.
 
 
 
