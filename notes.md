@@ -3171,6 +3171,77 @@ WLCs have a few different kinds of interfaces:
  - Service port interface: If the service port is used, this interface is bound to it and used for out-of-band management.
  - Dynamic interface: These are the interfaces used to map a WLAN to a VLAN. For example, traffic from the 'Interfnal' WLAN will be sent to the wired network from the WLC's 'Internal' dynamic interface.
 
+Network automatication provides many key benefits:
+ - Human error (typos etc.) is reduced
+ - Networks become much more scalable. New deployments, network-wide changes, and troubleshooting can be implemented in a fraction of the time.
+ - Network-wide policy compliance can be assured (standard configurations, software versions, etc).
+ - The improved efficiency of network operations reduces the opex (operating expenses) of the network. Each task requires fewer man-hours.
+
+What does a router do?
+  It forwards messages between networks by examining information in the Layer 3 header
+  It uses a routing protocol like OSPF to share route information with other routers and build a routing tabled.
+  It uses ARP to build an ARP table, mapping IP addresses to MAC addresses
+  It uses Syslog to keep logs of events that occur
+  It allows a user to connect to it via SSH and manage it.
+
+What does a switch do?
+ It forwards messages within a LAN by examining information in the Layer 2 header.
+ It uses STP to ensure there are no Layer 2 loops in the network.
+ It builds a MAC address table by examining the source MAC address of frames.
+ It uses Syslog to keep logs of events that occur.
+ It allows a user to connect to it via SSH and manage it.
+
+The various functions of network devices can be logically divided up (categorized) into planes:
+ Data plane
+ Control plane 
+ Management plane
+
+All tasks involved in forwarding user data/traffic from one interface to another are part of the data plane.
+A router receives a message, looks for the most specific matching route in its routing table, and forwards it out of the appropriate interface to the next hop.
+  It also de-encapsulates the original Layer 2 header, and re-encapsulates with a new header destined for the next hop's MAC address.
+A switch receives a message, looks at the destination MAC address, and forwards it out of the appropriate interface (or floods it).
+  This includes functions like adding or removing 802.1q VLAN tags.
+NAT (changing the src/dst addresses before forwarding) is part of the data plane.
+Deciding to forward or discard messages due to ACLs, port security, etc. is part of the data plane.
+The data plane is also called the 'forwarding plane'.
+
+The control plane controls what the data plane does, for example by building the router's routing table.
+The control plane performs overhead work.
+  OSPF itself doesn't forward user data packets, but it informs the data plane about how packets should be forwarded.
+  STP itself isn't directly involved in the process of forwarding frames, but it informs the data plane about which interfaces should and shouldn't be used to forward frames.
+  ARP messages aren't user data, but they are used to build an ARP table which is used in the process of forwarding data.
+  
+In traditional networking, the data plane and control plane are both distributed. Each device has its own data plane and its own control plane. The planes are 'distributed' throughout the network.
+
+Like the control plane, the management plane performs overhead work.
+  However, the managemnt plane doesn't directly affect the forwarding of messages in the data plane.
+The managemnent plane consists of protocols that are used to manage devices.
+  SSH/Telnet, used to connect to the CLI of a device to configure/manage it.
+  Syslog, used to keep logs of events that occur on the device.
+  SNMP, used to monitor the operations of the device.
+  NTP, used to maintain accurate time of the device.
+
+The operations of the Management plane and Control plane are usually managed by the CPU.
+However, this is not desirable for data plane operations because CPU processing is slow (relatively speaking)
+Instead, a specialized hardware ASIC (Application-Specific Integrated Circuit) is used. ASICs are chips built for specific purposes.
+Using aswitch as an example:
+  When a frame is received, the ASIC is responsible for the switching logic.
+  The MAC address table is stored in a kind of memory called TCAM (Ternary Content-Addressable Memory)
+  The ASIC feeds the destination MAC address of the frame into the TCAM, which returns the matching MAC address table entry
+  The frame is then forwarded out of the appropriate interface.
+Modern routers also use a similar hardware data plane: an ASIC designed for forwarding logic, and tables stored in TCAM.
+
+Software-Defined Networking (SDN) is an approach to networking that centralizes the control plane into an application called a controller.
+SDN is also called Software-Defined Architecture (SDA) or Controller-Based Networking.
+Traditional contorl planes use a distributed architecture.
+  For example, each router in the network runs OSPF and the routers share routing information and then calculate their preferred routes to each destination.
+An SDN controller centralizes control plane functions like calculating routes.
+  That is just an example, and how much of the control plane is centralized varies greatly.
+The controller can interact programmatically with the network devices using APIs (Application Programming Interface).
+
+The SBI is used for communications between the contorller and the network devices it controls.
+It typically consists of a communication protocol and API (Application Programming Interface)
+APIs facilitate data exchanges between programs.
 
 
 
