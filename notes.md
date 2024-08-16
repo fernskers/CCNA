@@ -3242,17 +3242,89 @@ The controller can interact programmatically with the network devices using APIs
 The SBI is used for communications between the contorller and the network devices it controls.
 It typically consists of a communication protocol and API (Application Programming Interface)
 APIs facilitate data exchanges between programs.
+  Data is exchanged between the controller and the network devices
+  An API on the network devices allows the controller to access information on the devices, control their data plane tables, etc.
+Some examples of SBIs:
+  OpenFlow
+  Cisco OpFlex
+  Cisco onePK (Open Network Envionment Platform Kit)
+  NETCONF
 
+Using the SBI, the contorller communicates with the managed devices and gathers information about them:
+  The devices in the network
+  The topology
+  The available interfaces on each device
+  Their configurations
 
+The Northbound Interface (NBI) is what allows us to interact with the controller, access the data it gathers about the network, program it, and make changes in the network via the SBI.
+A REST API is used on the contorller as an interface for apps to interact with it.
+  REST = Representational State Transfer
+Data is sent in a structured (serialized) format such as JSON or XML.
+  This makes it much  easier for programs to use the data.
 
+Networking tasks can be automated in traditional network architectures too:
+ - Scripts can be written (ie. using Python) to push commands to many devices at once.
+ - Python with good use of Regular Expressions can parse through show commands to gather information about the network devices.
+However, the robust and centralized data collected by SDN controllers greatly facilitates these functions.
+  The controller collects informationa bout all devices in the network.
+  Northbound APIs allow apps to access information in a format that is easy for programs to understand
+  The centralized data facilitates network-wide analytics.
+SDN tools can provide the benefits of automation without the requirement of their-party scripts & apps.
+  You don't need expertise in automation to make use of SDN tools.
+  However, APIs allow third-party applications to interact with the contorller, which can be very powerful.
+Although SDN and automation aren't the same thing, the SDN architecture greatly facilitates the automation of various tasks in the network via the SDN controller and APIs.
 
+Data serialization is the process of converting data into a standardized format/structure that can be stored or transmitted and reconstructed later.
+  - This allows the data to be communicated between applications in a way both applications understand.
+Data serialization alnguages allow us to represent variables with text.
 
+JSON (Javascript Object Notation) is an open standard file format and data interchange format that uses human-readable text to store and trasmit data objects.
+It is standardized in RFC 8259.
+It was derived from JavaScript, but it is language-independent and many modern programming languagues are able to generate and read JSON data.
+Whitespace is insignificant.
+JSON can represent four 'primitive' data types:
+ - string
+ - number
+ - boolean
+ - null
+JSON also has two 'structured' data types:
+ - object
+ - array
 
+JSON primitive data types:
+  - A string is a text vlaue. It is surrounded by double quotes "".
+  - A number is a numeric value. It is not surrounded by quotes.
+  - A boolean is a data type that has only two possible values (true and false), not surrounded by quotes.
+  - A null value represents the intentional absence of any object value. It is not surrounded by quotes.
 
+JSON structured data types:
+ - An object is an unordered list of key-value pairs (variables). Sometimes called a dictionary.
+     - Objects are surrounded by curly brackets {}.
+     - The key is a string
+     - The value is any valid JSON data type
+     - The key and value are separated by a colon:.
+     - If there are multiple key-value paris, each pair is separated by a comma.
+Objects are a valid data type for the value of a key-value pair.
+Objects within objects are called 'nested objects'.
+ - An array is a series of values separated by commas.
+     - not key-value pairs.
+     - the values don't have to be the same data type
 
+XML (Extensible Markup Language) was develoiped as a markup language, but is now used as  ageneral data serialization languague.
+ - markup languages (ie. HTmL) are used to format text
+XML is generally less human-readable than JSON
+Whitespace is insignificant
+Often used by REST APIs
+<key>value</key>
 
-
-
+YAML originally meant Yet Another Markup Lnaguage, but to distinguish its purpose as a data-serialization rather than a markup languague, it was repurposed to YAML Aint Markup Lnaguage.
+YAML is used by the netowrk automation tool Ansible
+YAML is very human-readable
+Whitespace is significant
+  Indentation is very important
+YAML files start with ---.
+- is used to indicate a list
+Keys and values are represented as key:value
 
 
 
