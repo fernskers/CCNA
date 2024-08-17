@@ -3326,6 +3326,220 @@ YAML files start with ---.
 - is used to indicate a list
 Keys and values are represented as key:value
 
+An API (Application Programming Interface) is a software interface that allows two applications to communicate with each other.
+APIs are essential not just for netework automation, but for all kinds of applications.
+In SDN architecture, APIs are used to communicate between apps and the SDN controller (via the NBI), and between the SDN controller and the network devices (via the SBI).
+The NBI typically uses REST APIs.
+NETCONF and RESTCONF are popular southbound APIs.
+
+CRUD (Create, Read, Update, Delete) refers to the operations we perform using REST APIs.
+Create operations are used to create new variables and set their initial values.
+Read operations are used to retrieve the value of a variable.
+Update operations are used to change the value of a veriable.
+Delete operations are used to delete variables.
+HTTP uses verbs that map to these CRUD operations.
+REST APIs typically use HTTP.
+
+When an HTTP client sends a request to an HTTP server, the HTTP header includes information like this:
+ - An HTTP Verb (ie. GET)
+ - A URI (Uniform Resource Identifier), indicating the resource it is trying to access.
+HTTP request can include additional headers which pass additional information to the server.
+An example would be an Accept header, which informs the server about the types of data that can be sent back to the client.
+When a REST client makes an API call (request) to a REST server, it will send an HTTP request like the one above.
+  *REST APIs don't have to use HTTP for communication, although HTTP is the most common choice.
+
+The server's response will include a status code indicating if the request succeeded or failed, as well as other details.
+The first digit indicates the class of the response:
+  1xx informational - the request was received, continuing process
+  2xx successful - the request was  successfully received, understood, and accepted
+  3xx redirection - the further action needs to be taken in order to complete the request
+  4xx client error - th eserver failed to fulfill an apparently valid request
+
+REST stands for Representational State Transfer
+REST APIs are also known as REST-based APIs or RESTful APIs
+  REST isn't a specific API. Instead, it describes a set of rules about how the API should work.
+The six constraints of RESTful architecture are:
+  - Uniform Interface
+  - Client-server
+  - Stateless
+  - Cacheable or non-cacheable
+  - Layered system
+  - Code-on-demand (optional)
+
+REST APIs use a client-server architecture.
+The client uses API calls (HTTP requests) to access the resources on the server.
+The seperation between the client and server means they can both change and evolve independently of each other.
+  When the client application changes or the server application changes, the interface between them must not break.
+
+REST APIs exchanges are stateless.
+This means that each API exchange is a seperate event, independent of all past exchanges between the client and server.
+  The server does not store information about previous requests from the client to determine how it should respond to new requests.
+If authentication is required, this means that the client must authenticate with the server for each request it makes.
+TCP is an example of a statful protocol.
+UDP is an example of a stateless protocol.
+* Although REST APIs use HTTP, which uses TCP (stateful) as its Layer 4 protocol, HTTP and REST APIs themselves aren't stateful. The functions of each layer are separate!
+
+REST APIs must support caching of data.
+Caching refers to storing data for future use.
+  For example, your computer might cache many elemnts of a web page so that it doesn't have to retrieve the entire page every time you visit it.
+  This improves performance for the client and reduces the load on the server.
+Not all resources have to be cacheable, but cacheable resources MUST be declared as cacheable.
+For applications to communicate over a network, networking protocols must be used to facilitate thos communications.
+  For REST APIs, HTTP(S) is the most common choice.
+
+Software-Defined Networking (SDN) i an approeach to networking that centralizes the control plane into an application called a controller.
+Traditional control planes use a distributed architecture.
+An SDN contorller centralizes control plane functions like calculating routes.
+The controller can interact programmatically with the network devices using APIs.
+The SBI is used for communications between the controller and the netowrk devices it controls.
+The NBI is what allows us to interact with the controller with our scripts and applications.
+
+Application Layer - Contains scripts/applications that tell the SDN contorller what network behaviors are desired.
+Control Layer - Contains the SDN controller that receives and processes instructions from the application layer.
+Infrastructure Layer - Contains the network devices that are responsible for forwarding messages across the network.
+
+Cisco SD-Access is Cisco's SDN solution for automating campus LANs.
+ - ACI (Application Centric Infrastructure) is their SDN solution for automating data center networks.
+ - SD-WAN is their SDN solution for automating WANs.
+Cisco DNA (Digital Network Architecture) Center is the controller at the center of SD-Access.
+
+The underlay is the underlying physical network of devices and connections (including wired and wireless) which provide IP connectivity (ie. using IS-IS).
+ - Multilayer switches and their connections
+The overlay is the virtual network built on top of the physical underlay network.
+ - SD-Access uses VXLAN (Virtual Extensible LAN) to build tunnels.
+The fabric is the combination of the overlay and underlay; the physical and virtual network as a whole.
+   
+The underlay's purpose is to support the VXLAN tunnels of the overlay.
+There are three different roles for switches in SD-Access:
+  - Edge nodes: Connect to end hosts
+  - Border nodes: Connect to devices outside of the SD-Access domain, ie. WAN routers.
+  - Control nodes: Use LISP (Locator ID Separation Protocol) to perform various control plane functions.
+You can add SD-Access on top of an existing network (brownfield deployment) if your network hardware and software supports it.
+  - Google 'Cisco SD-Access compatibility matrix' if you're curious.
+  - In this case DNA Center won't configure the underlay.
+A new deployment (greenfield deployment) will be configured by DNA Cneter to use the optimal SD-Access underlay:
+  All switches are Layer 3 and use IS-IS as their routing protocol
+  All links between switches are routed ports. This means STP is not needed.
+  Edge nodes (access switches) act as the default gateway of end hosts (routed access layer)
+
+LISP provides the control plane of SD-Access.
+  A list of mappings of EIDs (endpoint identifiers) to RLOCs (routing locators) is kept.
+  EIDs identify end hosts connected to edge switches, and RLOCs identify the edge switch which can be used to reach the end hosts.
+  There is a LOT more detail to cover about LISP, but I think you can see how it differs from the traditional control plane.
+Cisco TrustSec (CTS) provides policy control (QoS, security policy, etc.)
+VXLAN provides the data plane of SD-Access.
+
+Cisco DNA Center has two main roles:
+ - The SDN controller in SD-Access
+ - A network manager in a traditional network (non-SD-Access)
+DNA Center is an application installed on Cisco UCS server hardware.
+It has a REST API which can be used to interact with DNA center.
+The SBI supports protocols such as NEtCONF and RESTCONF (as well as traditional protocols like Telnet, SSH, SNMP)
+DNA Center enables Intent-Based Networking (IBN).
+ - The goal is to allow the engineer to communicate their intent for netowrk behavior to DNA Cneter, and then DNA Center will take care of the details of the actual configurations and policies on devices.
+Traditional security policies using ACLs can become VERY cumbersome.
+ - ACLs can have thousands of entries
+ - The intent of entries is forgotten with time and as engineers leave and new engineers take over.
+ - Configuring and applying the ACLs correctly across a network is cumbersome and leaves room for error.
+DNA Center allows the engineer to specify the intent of the policy and DNA Center will take care of the exact details of implementing the policy.
+
+Traditional network management:
+  - Devices are configured one-by-one via SSH or console connection.
+  - Devices are manually configured via console connection before being deployed.
+  - Configurations and policies are managed per-device.
+  - New network deployments can take a long time due to the manual labor required.
+  - Error and failures are more likely due to increased manual effort.
+
+DNA Center-based network managament:
+  - Devices are centrally managed and monitored from the DNA Center GUI or other applications using its REST API.
+  - The administrator communicates their intended network behavior to DNA Center, which changes those intentions into configurations on the managed network devices.
+  - Configurations and policies are centrally managed.
+  - Software versions are also centrally managed. DNA Center can monitor cloud servers for new versions and then update the managed devices.
+  - New network deployments ar emuch quicker. New devices can automatically receive their configurations from DNA Center without manual configuration.
+
+Configuration drift is when individual changes made over time cause a device's configuration to deviate form the standard/correct configurations as defined by the company.
+   - Although each device will have unique parts of its configuration (IP addresses, host name, etc), most of a device's configuration is usually defigned in standard
+     templates designed by the network architects/engineers of the company.
+   - As individual engineers make changes to devices (for example to troubleshoot and fix netowrk issues, test configurations, etc.), the configuration of a device can drft away
+     from the standard
+   - Records of these individual changes and their reasons aren't kept
+   - This can lead to future issues.
+Even without automation tools, it is best to have standard configuration management practices.
+  - When a change is made, save the config as a text file and place it in a shared folder.
+  - A standarad naming system like *hostname_yyyymmdd* might be used.
+  - There are flaws to this system, as an engineer might forget to place the new config in the folder after making changes.
+
+Configuration provisioning refers to how configuration changes are applied to devices.
+  - This includes configuring new devices, too.
+Traditionally, configuration provisioning is done by connecting to devices one-by-one via SSH.
+  - This is no practical in large networks.
+Configuration management tools like Ansible, Puppet, and Chef allow us to make changes to devices on a mass scale with a fraction of the time/effort.
+Two essential components: templates and variables
+
+Configuration management tools ar enetwork automation tools that facilitate the centralized control of large number of network devices.
+The options you need to be aware of for the CCNA are Ansible, Puppet, and Chef.
+These tools were originally developed after the rise of VMs, to enable server system admins to automate the process of creating, configuring, and removing VMs.
+  - However, they are also widely used to manage network devices.
+These tools can be used to perform tasks such as:
+  - Generate configurations for new devices on a large scale.
+  - Perform configuration changes on devices (all devices in your network, or a certain subset of devices)
+  - Check device configurations for compliance with defined standards.
+  - Compare configurations between devices, and between different versions of configurations on the same device.
+
+Ansible is a configuration management tool owned by Red Hat.
+Ansible itself is written in Python
+Ansible is agentless
+  - It doesn't require any special software to run on the managed devices.
+Ansible uses SSH to connect to devices, make configuration changes, extract information, etc.
+Ansible uses a push model. The Ansible server (Control node) uses SSH to connect to managed devices and push configuration changes to them.
+  - Puppet and Chef use a pull model.
+After installing Ansible itself,  you must create several text files:
+  Playbooks: These files are 'blueprints of automation tasks'. They outline the logic and actions of the tasks that Ansible should do. Written in YAML.
+  Inventory: These files list the devices that will be managed by Ansible, as well as characteristics of each device such as their device role. Written in INI, YAML, or other formats.
+  Templates: These files represent a device's configuration file, but specific values for variables ar enot provided. Written in Jinja2 format.
+  Variables: These files list variables and their values. These values are substitued into the templates to create complete configuration files. Written in YAML.
+
+Puppet is a configuration management tool written in Ruby.
+Puppet is typically agent-based
+  - Specific software must be installed on the managed devices.
+  - Not all Cisco devices support a Puppet agent.
+It can be run agentless, in which a proxy agent runs on an external host, and the proxy agent uses SSH to connect to the managed devices and communicate with them.
+The Puppet server is called the 'Puppet master'
+Puppet uses a pull model (clients 'pull' configurations from the Puppet master)
+  - Clients use TCP 8140 to communicate with the Puppet master
+Instead of YAML, it uses a proprietary language for files
+Text files required on the Puppet master include:
+  - Manifest: This file defines the desired configuration state of a network device.
+  - Templates: Similar to Ansible templates. Used to generate Manifests.
+
+Chef is a confiugration management tool written in Ruby.
+Chef is agent-based.
+  - Specific software must be installed on the managed devices.
+  - Not all Cisco devices support a Chef agent.
+Chef uses a pull model.
+The server uses TCP 10002 to send configurations to clients.
+Files use a DSL (Domain-Specific Language) based on Ruby.
+Text files used by Chef include:
+  Resources: The 'ingredients' in a recipe. Configuration objects managed by Chef.
+  Recipes: The 'recipes' in a cookbook. Outline the logic and actions of the tasks performed on the resources.
+  Cookbooks: A set of related recipes grouped together.
+  Run-list: An ordered list of recipes that are run to bring a device to the desired configuration state.
+
+![image](https://github.com/user-attachments/assets/74929175-a524-420e-a81e-6ca4d5d97aa3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
